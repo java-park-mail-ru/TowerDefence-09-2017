@@ -1,17 +1,20 @@
 package com.td.models;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.td.models.constraints.UserExistsConstraint;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 
 @JsonAutoDetect
 public class SigninForm {
-    @NotNull(message = "Email field is required")
+    @NotBlank(message = "Email field is required")
     @Email(message = "Invalid email")
+    @UserExistsConstraint
     private String email;
 
-    @NotNull(message = "Password field is required")
+    @NotBlank(message = "Password field is required")
     private String password;
 
 
