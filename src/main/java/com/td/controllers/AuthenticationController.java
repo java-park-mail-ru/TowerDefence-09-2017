@@ -1,7 +1,8 @@
 package com.td.controllers;
 
 import com.sun.org.apache.regexp.internal.RE;
-import com.td.EmailValidator;
+//import com.td.EmailValidator;
+import com.td.models.SigninForm;
 import com.td.models.User;
 import com.td.models.ResponseStatus;
 
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @SuppressWarnings("unused")
 @RestController
@@ -22,32 +24,26 @@ public class AuthenticationController {
 
     @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity loginUser(@RequestBody User user, HttpSession httpSession) {
+    public ResponseEntity loginUser(@Valid @RequestBody SigninForm user, HttpSession httpSession) {
 
         final UserService userService;
 
-        if(httpSession.getAttribute("session-id") != null) {
+        if (httpSession.getAttribute("user") != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("User is already logged in"));
         }
+
         final String password = user.getPassword();
         final String mail = user.getEmail();
 
-
-        if(mail == null || !EmailValidator.isValid(mail)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("Incorrect email"));
-        }
-
         final User dbUser = UserService.getUser(mail);
 
-        if(dbUser == null || !BCrypt.checkpw(password, dbUser.getPassword())) {
+        if (!BCrypt.checkpw(password, dbUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("Incorrect password"));
         }
 
-        httpSession.setAttribute("user", dbUser.getEmail());
+        httpSession.setAttribute("user", dbUser);
 
-        final HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("session-id", dbUser.getId().toString());
-        return new ResponseEntity<>(new ResponseStatus("Success").getStatus(), responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseStatus("Success").getStatus(), HttpStatus.OK);
     }
 
     @PostMapping(path = "/logout", produces = "application/json")
