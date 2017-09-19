@@ -41,9 +41,9 @@ public class AuthenticationController {
             return new ResponseEntity<>(new ResponseStatus("Incorrect password"), HttpStatus.BAD_REQUEST);
         }
 
-        httpSession.setAttribute("user", dbUser);
+        httpSession.setAttribute("user", dbUser.getId());
 
-        return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
+        return new ResponseEntity<>(dbUser, HttpStatus.OK);
     }
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
@@ -59,10 +59,10 @@ public class AuthenticationController {
         final String login = user.getEmail();
 
         final User newUser = new User(user.getEmail(), user.getPassword(), user.getEmail());
-        UserService.addUser(newUser);
-        httpSession.setAttribute("user", newUser);
+        UserService.storeUser(newUser);
+        httpSession.setAttribute("user", newUser.getId());
 
-        return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/logout", produces = "application/json")

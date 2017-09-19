@@ -2,8 +2,7 @@ package com.td.controllers;
 
 import com.td.models.ResponseStatus;
 import com.td.models.User;
-
-import com.td.models.SignupForm;
+import com.td.models.UserUpdate;
 import com.td.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +22,12 @@ public class UserConroller {
     @ResponseBody
     public ResponseEntity getUserBySession(HttpSession httpSession) {
 
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Long userId = (Long) httpSession.getAttribute("user");
+        if (userId == null) {
+            return new ResponseEntity<>(new ResponseStatus("Unauthorozed"), HttpStatus.UNAUTHORIZED);
+        }
+        User user = UserService.getUser(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}", produces = "application/json")
@@ -37,18 +40,31 @@ public class UserConroller {
 
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity editUser(HttpSession httpSession) {
+    public ResponseEntity editUser(@Valid @RequestBody UserUpdate user, HttpSession httpSession) {
+        if (httpSession.getAttribute("user") != user.getId()) {
+            return new ResponseEntity<>(new ResponseStatus("Not Allowed"), HttpStatus.METHOD_NOT_ALLOWED);
+        }
+        User oldUser = UserService.getUser(user.getId());
+        Long id = user.getId();
+        String email = user.getEmail();
+        String login = user.getLogin();
+        if (id != 0) {
+            UserService.removeUser(id);
+            oldUser.setId(id);
+        }
 
+        if (email != null && !email.equals("")) {
+            UserService.removeUser(email);
+            oldUser.setEmail(email);
+        }
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (login != null && !login.equals("")) {
+            oldUser.setLogin(login);
+        }
+        UserService.updateUser(oldUser);
+
+        return new ResponseEntity<>(new ResponseStatus("Updated"), HttpStatus.OK);
     }
-
-
-
-
-
-
-
 
 
 }
