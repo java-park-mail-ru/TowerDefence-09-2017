@@ -14,6 +14,9 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/user")
+@CrossOrigin(origins = "https://tdteam.herokuapp.com",
+        allowedHeaders = "Content-Type",
+        allowCredentials = "true")
 public class UserConroller {
 
     @GetMapping(produces = "application/json")

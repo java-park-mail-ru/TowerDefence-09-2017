@@ -16,6 +16,9 @@ import javax.validation.Valid;
 
 @SuppressWarnings("unused")
 @RestController
+@CrossOrigin(origins = "https://tdteam.herokuapp.com",
+        allowedHeaders = "Content-Type",
+        allowCredentials = "true")
 @RequestMapping(path = "/auth")
 public class AuthenticationController {
 
