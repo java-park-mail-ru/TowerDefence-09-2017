@@ -22,7 +22,9 @@ public class UserService {
     }
 
     public static void addUser(User newUser) {
-
+        newUser.setId(generateId());
+        storedByEmail.put(newUser.getEmail(), newUser);
+        storedById.put(newUser.getId(), newUser);
     }
 
     public static User getUser(Long id) {
