@@ -9,6 +9,7 @@ import com.td.services.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +19,6 @@ import javax.servlet.http.HttpSession;
 @RestController
 @RequestMapping(path = "/auth")
 public class AuthenticationController {
-
-    private BCryptPasswordEncoder passwordEncoder;
-
-
 
     @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -42,7 +39,7 @@ public class AuthenticationController {
 
         final User dbUser = UserService.getUser(mail);
 
-        if(dbUser == null || !passwordEncoder.matches(password, dbUser.getPassword())) {
+        if(dbUser == null || !BCrypt.checkpw(password, dbUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("Incorrect password"));
         }
 
