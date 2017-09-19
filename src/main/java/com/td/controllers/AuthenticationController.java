@@ -1,17 +1,13 @@
 package com.td.controllers;
 
-import com.sun.org.apache.regexp.internal.RE;
-//import com.td.EmailValidator;
 import com.td.models.SigninForm;
 import com.td.models.User;
 import com.td.models.ResponseStatus;
 
 import com.td.services.UserService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -29,7 +25,7 @@ public class AuthenticationController {
         final UserService userService;
 
         if (httpSession.getAttribute("user") != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("User is already logged in"));
+            return new ResponseEntity<>(new ResponseStatus("User is already logged in"), HttpStatus.BAD_REQUEST);
         }
 
         final String password = user.getPassword();
@@ -38,18 +34,22 @@ public class AuthenticationController {
         final User dbUser = UserService.getUser(mail);
 
         if (!BCrypt.checkpw(password, dbUser.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("Incorrect password"));
+            return new ResponseEntity<>(new ResponseStatus("Incorrect password"), HttpStatus.BAD_REQUEST);
         }
 
         httpSession.setAttribute("user", dbUser);
 
-        return new ResponseEntity<>(new ResponseStatus("Success").getStatus(), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
     }
 
     @PostMapping(path = "/logout", produces = "application/json")
     @ResponseBody
     public ResponseEntity logoutUserBySession(HttpSession httpSession) {
+        if (httpSession.getAttribute("user") == null) {
+            return new ResponseEntity<>(new ResponseStatus("Unauthorized"), HttpStatus.UNAUTHORIZED);
+        }
+        httpSession.invalidate();
+        return new ResponseEntity<>(new ResponseStatus("Session successfully invalidated"), HttpStatus.OK);
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
