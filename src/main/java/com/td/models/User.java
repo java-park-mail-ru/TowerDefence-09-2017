@@ -31,6 +31,14 @@ public class User {
         this.id = id;
     }
 
+    public User(@JsonProperty("login") String login,
+                @JsonProperty("password") String password,
+                @JsonProperty("email") String email) {
+        this.login = login;
+        this.password = password;
+        this.email = email;
+    }
+
 
     public String getLogin() {
         return login;
