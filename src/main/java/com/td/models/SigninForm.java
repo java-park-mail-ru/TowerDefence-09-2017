@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
 public class SigninForm {
     @NotBlank(message = "Email field is required")
     @Email(message = "Invalid email")
-    @UserExistance(true)
+    @UserExistance(value = true, message = "Email doesn't correspond any user")
     private String email;
 
     @NotBlank(message = "Password field is required")

@@ -1,6 +1,7 @@
 package com.td.controllers;
 
 import com.td.models.SigninForm;
+import com.td.models.SignupForm;
 import com.td.models.User;
 import com.td.models.ResponseStatus;
 
@@ -18,7 +19,7 @@ import javax.validation.Valid;
 @RequestMapping(path = "/auth")
 public class AuthenticationController {
 
-    @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity loginUser(@Valid @RequestBody SigninForm user, HttpSession httpSession) {
 
@@ -38,6 +39,25 @@ public class AuthenticationController {
         }
 
         httpSession.setAttribute("user", dbUser);
+
+        return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity registerUser(@Valid @RequestBody SignupForm user, HttpSession httpSession) {
+
+        if (httpSession.getAttribute("user") != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("User is already logged in"));
+        }
+
+        final String mail = user.getEmail();
+        final String password = user.getPassword();
+        final String login = user.getEmail();
+
+        final User newUser = new User(user.getEmail(), user.getPassword(), user.getEmail());
+        UserService.addUser(newUser);
+        httpSession.setAttribute("user", newUser);
 
         return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
     }

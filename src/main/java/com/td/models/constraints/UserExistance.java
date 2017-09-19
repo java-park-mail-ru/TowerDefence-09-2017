@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UserExistanceValidator.class)
 public @interface UserExistance {
-    String message() default "Email does not correspond to any user";
+    String message() default "User existance check failed";
 
     Class<?>[] groups() default {};
 

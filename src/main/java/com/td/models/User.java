@@ -3,6 +3,7 @@ package com.td.models;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 
 @JsonAutoDetect
@@ -35,7 +36,7 @@ public class User {
                 @JsonProperty("password") String password,
                 @JsonProperty("email") String email) {
         this.login = login;
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
         this.email = email;
     }
 
