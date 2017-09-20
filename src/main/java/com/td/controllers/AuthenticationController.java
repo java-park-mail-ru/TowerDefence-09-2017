@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@SuppressWarnings("unused")
 @RestController
 @CrossOrigin(origins = "https://tdteam.herokuapp.com",
         allowedHeaders = "Content-Type",
@@ -58,7 +57,7 @@ public class AuthenticationController {
         final String password = user.getPassword();
         final String login = user.getEmail();
 
-        final User newUser = new User(user.getEmail(), user.getPassword(), user.getEmail());
+        final User newUser = new User(mail, password, login);
         UserService.storeUser(newUser);
         httpSession.setAttribute("user", newUser.getId());
 

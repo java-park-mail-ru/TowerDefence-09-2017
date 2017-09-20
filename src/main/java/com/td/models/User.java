@@ -7,7 +7,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 
 @JsonAutoDetect
-@SuppressWarnings("unused")
 public class User {
     @JsonProperty
     private String login;
@@ -73,15 +72,4 @@ public class User {
         this.id = id;
     }
 
-    /*
-    @Override
-    public String toString() {
-        String str = "=================================\r\n";
-        str += "Login: " + login + "\r\n" +
-                "Password: " + password + "\r\n" +
-                "Email: " + email + "\r\n" +
-                "Id: " + id + "\r\n";
-        return str;
-    }
-    */
 }

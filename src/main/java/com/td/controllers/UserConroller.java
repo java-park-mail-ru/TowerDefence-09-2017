@@ -36,11 +36,11 @@ public class UserConroller {
         if (httpSession.getAttribute("user") != user.getId()) {
             return new ResponseEntity<>(new ResponseStatus("Not Allowed"), HttpStatus.METHOD_NOT_ALLOWED);
         }
-        User oldUser = UserService.getUser(user.getId());
-        Long id = user.getId();
-        String email = user.getEmail();
-        String login = user.getLogin();
-        String password = user.getPassword();
+        final User oldUser = UserService.getUser(user.getId());
+        final Long id = user.getId();
+        final String email = user.getEmail();
+        final String login = user.getLogin();
+        final String password = user.getPassword();
 
         if (id != 0) {
             UserService.removeUser(id);
@@ -55,7 +55,7 @@ public class UserConroller {
         if (login != null && !login.equals("")) {
             oldUser.setLogin(login);
         }
-        if (password != null && !password.equals("")){
+        if (password != null && !password.equals("")) {
             oldUser.setPassword(password);
         }
 

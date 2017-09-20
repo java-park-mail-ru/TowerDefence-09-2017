@@ -5,7 +5,6 @@ import com.td.models.constraints.UserExistence;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
-@SuppressWarnings("unused")
 @JsonAutoDetect
 public class SignupForm {
     @NotBlank(message = "Email field is required")
