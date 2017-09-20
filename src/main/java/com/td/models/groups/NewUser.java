@@ -1,4 +1,6 @@
 package com.td.models.groups;
 
-public interface NewUser {
+import javax.validation.groups.Default;
+
+public interface NewUser extends Default {
 }
