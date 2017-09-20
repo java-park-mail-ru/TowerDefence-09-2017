@@ -30,14 +30,6 @@ public class UserConroller {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{id}", produces = "application/json")
-    @ResponseBody
-    public ResponseEntity getUserInfoById(HttpSession httpSession, @PathVariable(name = "id") Long userId) {
-
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity editUser(@Valid @RequestBody UserUpdate user, HttpSession httpSession) {
@@ -48,6 +40,8 @@ public class UserConroller {
         Long id = user.getId();
         String email = user.getEmail();
         String login = user.getLogin();
+        String password = user.getPassword();
+
         if (id != 0) {
             UserService.removeUser(id);
             oldUser.setId(id);
@@ -61,6 +55,10 @@ public class UserConroller {
         if (login != null && !login.equals("")) {
             oldUser.setLogin(login);
         }
+        if (password != null && !password.equals("")){
+            oldUser.setPassword(password);
+        }
+
         UserService.updateUser(oldUser);
 
         return new ResponseEntity<>(new ResponseStatus("Updated"), HttpStatus.OK);

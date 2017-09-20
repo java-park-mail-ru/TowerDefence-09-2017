@@ -72,7 +72,7 @@ public class AuthenticationController {
             return new ResponseEntity<>(new ResponseStatus("Unauthorized"), HttpStatus.UNAUTHORIZED);
         }
         httpSession.invalidate();
-        return new ResponseEntity<>(new ResponseStatus("Session successfully invalidated"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
 
     }
 }
