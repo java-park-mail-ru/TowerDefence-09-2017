@@ -3,11 +3,12 @@ package com.td.controllers;
 import com.td.models.ResponseStatus;
 import com.td.models.SigninForm;
 import com.td.models.User;
+import com.td.models.groups.NewUser;
 import com.td.services.UserService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -44,22 +45,18 @@ public class AuthenticationController {
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity registerUser(@Valid @RequestBody User user, HttpSession httpSession) {
+    public ResponseEntity registerUser(@Validated(NewUser.class) @RequestBody User user, HttpSession httpSession) {
 
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("User is already logged in"));
         }
 
-        final String mail = user.getEmail();
-        final String password = user.getPassword();
-        final String login = user.getEmail();
+        user.savePassword();
 
-        final User newUser = new User(mail, password, login);
+        UserService.storeUser(user);
+        httpSession.setAttribute(UserService.USER_SESSION_KEY, user.getId());
 
-        UserService.storeUser(newUser);
-        httpSession.setAttribute(UserService.USER_SESSION_KEY, newUser.getId());
-
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/logout", produces = "application/json")

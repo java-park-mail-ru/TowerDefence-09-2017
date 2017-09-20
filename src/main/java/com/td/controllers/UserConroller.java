@@ -2,14 +2,14 @@ package com.td.controllers;
 
 import com.td.models.ResponseStatus;
 import com.td.models.User;
-import com.td.models.UserUpdate;
+import com.td.models.groups.UpdateUser;
 import com.td.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/user")
@@ -32,7 +32,7 @@ public class UserConroller {
 
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity editUser(@Valid @RequestBody UserUpdate user, HttpSession httpSession) {
+    public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody User user, HttpSession httpSession) {
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != user.getId()) {
             return new ResponseEntity<>(new ResponseStatus("Forbidden"), HttpStatus.FORBIDDEN);
         }

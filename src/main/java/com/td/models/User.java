@@ -4,29 +4,34 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.td.models.constraints.UserExistence;
+import com.td.models.groups.NewUser;
+import com.td.models.groups.UpdateUser;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+
+import javax.validation.constraints.NotNull;
 
 
 @JsonAutoDetect
 public class User {
 
-    @NotBlank(message = "Login field is required")
+    @NotBlank(message = "Login field is required", groups = NewUser.class)
     @JsonProperty
     private String login;
 
-    @NotBlank(message = "Password field is required")
+    @NotBlank(message = "Password field is required", groups = NewUser.class)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotBlank(message = "Email field is required")
+    @NotBlank(message = "Email field is required", groups = NewUser.class)
     @Email(message = "Invalid email")
     @UserExistence(value = false, message = "Email already registered")
     @JsonProperty
     private String email;
 
     @JsonProperty
+    @NotNull(message = "Id field is required", groups = UpdateUser.class)
     private Long id;
 
     @JsonCreator
@@ -79,6 +84,10 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void savePassword() {
+        setPassword(this.password);
     }
 
 }
