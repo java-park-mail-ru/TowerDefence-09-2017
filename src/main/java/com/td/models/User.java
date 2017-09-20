@@ -34,8 +34,8 @@ public class User {
     @NotNull(message = "Id field is required", groups = UpdateUser.class)
     private Long id;
 
-    private String hashPassword(String password) {
-       return BCrypt.hashpw(password, BCrypt.gensalt());
+    private String hashPassword(String somePassword) {
+        return BCrypt.hashpw(somePassword, BCrypt.gensalt());
     }
 
     @JsonCreator
@@ -57,8 +57,8 @@ public class User {
         this.email = email;
     }
 
-    public boolean checkPassword(String password){
-        return BCrypt.checkpw(password, this.password);
+    public boolean checkPassword(String outerPassword) {
+        return BCrypt.checkpw(outerPassword, this.password);
     }
 
     public String getLogin() {

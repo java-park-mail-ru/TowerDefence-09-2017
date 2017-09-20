@@ -8,6 +8,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 
+
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UserExistenceValidator.class)
