@@ -5,11 +5,11 @@ import com.td.services.UserService;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class UserExistanceValidator implements ConstraintValidator<UserExistance, String> {
+public class UserExistenceValidator implements ConstraintValidator<UserExistence, String> {
     private boolean isExist;
 
     @Override
-    public void initialize(UserExistance constraint) {
+    public void initialize(UserExistence constraint) {
         isExist = constraint.value();
     }
 

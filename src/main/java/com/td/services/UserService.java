@@ -8,8 +8,8 @@ import java.util.HashMap;
 @Service
 public class UserService {
 
-    private static final HashMap<String, User> storedByEmail = new HashMap<>();
-    private static final HashMap<Long, User> storedById = new HashMap<>();
+    private static HashMap<String, User> storedByEmail = new HashMap<>();
+    private static HashMap<Long, User> storedById = new HashMap<>();
 
     private static Long idSerial = 1L;
 
@@ -26,7 +26,7 @@ public class UserService {
         updateUser(newUser);
     }
 
-    public static void updateUser(User user){
+    public static void updateUser(User user) {
         storedByEmail.put(user.getEmail(), user);
         storedById.put(user.getId(), user);
     }

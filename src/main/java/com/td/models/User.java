@@ -2,7 +2,6 @@ package com.td.models;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
@@ -74,6 +73,7 @@ public class User {
         this.id = id;
     }
 
+    /*
     @Override
     public String toString() {
         String str = "=================================\r\n";
@@ -83,4 +83,5 @@ public class User {
                 "Id: " + id + "\r\n";
         return str;
     }
+    */
 }

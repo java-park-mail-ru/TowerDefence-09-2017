@@ -1,13 +1,13 @@
 package com.td.models;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.td.models.constraints.UserExistance;
+import com.td.models.constraints.UserExistence;
 import org.hibernate.validator.constraints.Email;
 
 @JsonAutoDetect
 public class UserUpdate {
     @Email(message = "Invalid email")
-    @UserExistance(value = false, message = "Email is alredy registered")
+    @UserExistence(value = false, message = "Email is alredy registered")
     private String email;
 
     private String password;

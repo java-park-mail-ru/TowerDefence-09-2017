@@ -1,7 +1,7 @@
 package com.td.models;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.td.models.constraints.UserExistance;
+import com.td.models.constraints.UserExistence;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
 public class SigninForm {
     @NotBlank(message = "Email field is required")
     @Email(message = "Invalid email")
-    @UserExistance(value = true, message = "Email doesn't correspond any user")
+    @UserExistence(value = true, message = "Email doesn't correspond any user")
     private String email;
 
     @NotBlank(message = "Password field is required")
