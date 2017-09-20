@@ -11,11 +11,11 @@ Backend проекта **TD** | Осень 2017
 
 ### Register User
 Регистрация нового пользователя
-**URL**
+#### URL
 `/auth/signup`
-**Method**
+#### Method
 `POST`
-**Params**
+#### Params
 ```
 {
   "login": string [required],
@@ -23,7 +23,7 @@ Backend проекта **TD** | Осень 2017
   "password": string [required],
 }
 ```
-**Response**
+#### Response
 В случае успеха, возвращает данные созданного пользователя
 ```
 {
@@ -34,18 +34,18 @@ Backend проекта **TD** | Осень 2017
  ```
 ### Signin
 Авторизация
-**URL**
+#### URL
 `/auth/signin`
-**Method**
+#### Method
 `POST`
-**Params**
+#### Params
 ```
 {
   "email": string [required],
   "password": string [required],
 }
 ```
-**Response**
+#### Response
 В случае успеха, возвращает данные авторизовавшегося пользователя
 ```
 {
@@ -56,11 +56,11 @@ Backend проекта **TD** | Осень 2017
  ```
 ### Logout
 Завершение пользовательской сессии
-**URL**
+##### URL
 `/logout`
-**Method**
+#### Method
 `POST`
-**Response**
+#### Response
 ```
 {
   "status":"Success"
@@ -83,9 +83,9 @@ Backend проекта **TD** | Осень 2017
  ```
  ### Update User
 Обновление пользователских данных
-**URL**
+#### URL
 `/user/edit`
-**Params**
+#### Params
 ```
 {
   "id": int[required],
@@ -94,9 +94,9 @@ Backend проекта **TD** | Осень 2017
   "password": string,
 }
 ```
-**Method**
+#### Method
 `POST`
-**Response**
+#### Response
 ```
 {
   "status":"Updated"
