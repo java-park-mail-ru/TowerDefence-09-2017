@@ -34,6 +34,10 @@ public class User {
     @NotNull(message = "Id field is required", groups = UpdateUser.class)
     private Long id;
 
+    private void hashPassword() {
+        this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+    }
+
     @JsonCreator
     public User(@JsonProperty("login") String login,
                 @JsonProperty("password") String password,
@@ -43,15 +47,18 @@ public class User {
         this.password = password;
         this.email = email;
         this.id = id;
+        hashPassword();
     }
 
     public User(@JsonProperty("login") String login,
                 @JsonProperty("password") String password,
                 @JsonProperty("email") String email) {
         this.login = login;
-        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.password = password;
         this.email = email;
+        hashPassword();
     }
+
 
 
     public String getLogin() {
@@ -67,7 +74,8 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.password = password;
+        hashPassword();
     }
 
     public String getEmail() {
@@ -84,10 +92,6 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void savePassword() {
-        setPassword(this.password);
     }
 
 }

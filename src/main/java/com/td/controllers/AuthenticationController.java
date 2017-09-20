@@ -26,21 +26,26 @@ public class AuthenticationController {
     public ResponseEntity loginUser(@Valid @RequestBody SigninForm user, HttpSession httpSession) {
 
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
-            return new ResponseEntity<>(new ResponseStatus("User is already logged in"), HttpStatus.BAD_REQUEST);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseStatus("User is already logged in"));
         }
 
         final String password = user.getPassword();
-        final String mail = user.getEmail();
 
-        final User dbUser = UserService.getUser(mail);
+        final User dbUser = UserService.getUser(user.getEmail());
 
         if (!BCrypt.checkpw(password, dbUser.getPassword())) {
-            return new ResponseEntity<>(new ResponseStatus("Incorrect password"), HttpStatus.BAD_REQUEST);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseStatus("Incorrect password"));
         }
 
         httpSession.setAttribute(UserService.USER_SESSION_KEY, dbUser.getId());
 
-        return new ResponseEntity<>(dbUser, HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(dbUser);
     }
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
@@ -48,25 +53,31 @@ public class AuthenticationController {
     public ResponseEntity registerUser(@Validated(NewUser.class) @RequestBody User user, HttpSession httpSession) {
 
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseStatus("User is already logged in"));
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseStatus("User is already logged in"));
         }
-
-        user.savePassword();
 
         UserService.storeUser(user);
         httpSession.setAttribute(UserService.USER_SESSION_KEY, user.getId());
 
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(user);
     }
 
     @PostMapping(path = "/logout", produces = "application/json")
     @ResponseBody
     public ResponseEntity logoutUserBySession(HttpSession httpSession) {
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) == null) {
-            return new ResponseEntity<>(new ResponseStatus("Unauthorized"), HttpStatus.UNAUTHORIZED);
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ResponseStatus("Unauthorized"));
         }
         httpSession.invalidate();
-        return new ResponseEntity<>(new ResponseStatus("Success"), HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseStatus("Success"));
 
     }
 }
