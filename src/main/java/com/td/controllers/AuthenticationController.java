@@ -35,7 +35,7 @@ public class AuthenticationController {
 
         final User dbUser = UserService.getUser(user.getEmail());
 
-        if (!BCrypt.checkpw(password, dbUser.getPassword())) {
+        if (!dbUser.checkPassword(password)) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseStatus("Incorrect password"));

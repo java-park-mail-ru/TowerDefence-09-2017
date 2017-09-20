@@ -34,8 +34,8 @@ public class User {
     @NotNull(message = "Id field is required", groups = UpdateUser.class)
     private Long id;
 
-    private void hashPassword() {
-        this.password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+    private String hashPassword(String password) {
+       return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     @JsonCreator
@@ -44,22 +44,22 @@ public class User {
                 @JsonProperty("email") String email,
                 @JsonProperty(value = "id") Long id) {
         this.login = login;
-        this.password = password;
+        this.password = hashPassword(password);
         this.email = email;
         this.id = id;
-        hashPassword();
     }
 
     public User(@JsonProperty("login") String login,
                 @JsonProperty("password") String password,
                 @JsonProperty("email") String email) {
         this.login = login;
-        this.password = password;
+        this.password = hashPassword(password);
         this.email = email;
-        hashPassword();
     }
 
-
+    public boolean checkPassword(String password){
+        return BCrypt.checkpw(password, this.password);
+    }
 
     public String getLogin() {
         return login;
@@ -74,8 +74,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
-        hashPassword();
+        this.password = hashPassword(password);
     }
 
     public String getEmail() {
