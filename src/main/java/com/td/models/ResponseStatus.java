@@ -4,7 +4,6 @@ package com.td.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@SuppressWarnings("unused")
 public class ResponseStatus {
 
     @JsonProperty

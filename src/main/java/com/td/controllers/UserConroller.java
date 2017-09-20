@@ -22,7 +22,7 @@ public class UserConroller {
     @ResponseBody
     public ResponseEntity getUserBySession(HttpSession httpSession) {
 
-        Long userId = (Long) httpSession.getAttribute("user");
+        Long userId = (Long) httpSession.getAttribute(UserService.USER_SESSION_KEY);
         if (userId == null) {
             return new ResponseEntity<>(new ResponseStatus("Unauthorozed"), HttpStatus.UNAUTHORIZED);
         }
@@ -33,8 +33,8 @@ public class UserConroller {
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity editUser(@Valid @RequestBody UserUpdate user, HttpSession httpSession) {
-        if (httpSession.getAttribute("user") != user.getId()) {
-            return new ResponseEntity<>(new ResponseStatus("Not Allowed"), HttpStatus.METHOD_NOT_ALLOWED);
+        if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != user.getId()) {
+            return new ResponseEntity<>(new ResponseStatus("Forbidden"), HttpStatus.FORBIDDEN);
         }
         final User oldUser = UserService.getUser(user.getId());
         final Long id = user.getId();
@@ -43,12 +43,10 @@ public class UserConroller {
         final String password = user.getPassword();
 
         if (id != 0) {
-            UserService.removeUser(id);
             oldUser.setId(id);
         }
 
         if (email != null && !email.equals("")) {
-            UserService.removeUser(email);
             oldUser.setEmail(email);
         }
 
@@ -58,9 +56,6 @@ public class UserConroller {
         if (password != null && !password.equals("")) {
             oldUser.setPassword(password);
         }
-
-        UserService.updateUser(oldUser);
-
         return new ResponseEntity<>(new ResponseStatus("Updated"), HttpStatus.OK);
     }
 

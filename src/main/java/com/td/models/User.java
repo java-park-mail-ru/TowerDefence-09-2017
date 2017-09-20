@@ -3,17 +3,26 @@ package com.td.models;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.td.models.constraints.UserExistence;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 
 @JsonAutoDetect
 public class User {
+
+    @NotBlank(message = "Login field is required")
     @JsonProperty
     private String login;
 
+    @NotBlank(message = "Password field is required")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @NotBlank(message = "Email field is required")
+    @Email(message = "Invalid email")
+    @UserExistence(value = false, message = "Email already registered")
     @JsonProperty
     private String email;
 

@@ -4,14 +4,22 @@ import com.td.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class UserService {
 
+
     private static HashMap<String, User> storedByEmail = new HashMap<>();
     private static HashMap<Long, User> storedById = new HashMap<>();
 
-    private static Long idSerial = 1L;
+    private static Long generateId() {
+        return idSerial.getAndIncrement();
+    }
+
+    private static AtomicLong idSerial = new AtomicLong(1L);
+
+    public static final String USER_SESSION_KEY = "user";
 
     public static Boolean checkIfUserExists(Long id) {
         return storedById.containsKey(id);
@@ -45,10 +53,6 @@ public class UserService {
 
     public static User removeUser(Long id) {
         return storedById.remove(id);
-    }
-
-    private static Long generateId() {
-        return idSerial++;
     }
 
 

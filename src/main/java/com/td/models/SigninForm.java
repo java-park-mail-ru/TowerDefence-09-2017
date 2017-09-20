@@ -15,7 +15,6 @@ public class SigninForm {
     @NotBlank(message = "Password field is required")
     private String password;
 
-
     public String getEmail() {
         return email;
     }
