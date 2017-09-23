@@ -10,9 +10,10 @@ import org.springframework.web.filter.CorsFilter;
 
 @SpringBootApplication
 public class Main {
+
     @Bean
     public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://frontend.debug:8000");
@@ -27,6 +28,7 @@ public class Main {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
     public static void main(String[] args) {
 
         SpringApplication.run(Main.class, args);
