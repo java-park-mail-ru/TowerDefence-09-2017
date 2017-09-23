@@ -1,10 +1,13 @@
 package com.td.controllers;
 
+import com.td.dtos.SigninFormDto;
+import com.td.dtos.UserDto;
+import com.td.dtos.groups.NewUser;
 import com.td.models.ResponseStatus;
-import com.td.models.SigninForm;
 import com.td.models.User;
-import com.td.models.groups.NewUser;
 import com.td.services.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,15 +17,17 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "https://tdteam.herokuapp.com",
+@RequestMapping(path = "/auth")
+@CrossOrigin(origins = "http://localhost:8000",
         allowedHeaders = "Content-Type",
         allowCredentials = "true")
-@RequestMapping(path = "/auth")
 public class AuthenticationController {
+    @Autowired
+    private ModelMapper modelMapper;
 
     @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity loginUser(@Valid @RequestBody SigninForm user, HttpSession httpSession) {
+    public ResponseEntity loginUser(@Valid @RequestBody SigninFormDto user, HttpSession httpSession) {
 
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
             return ResponseEntity
@@ -44,13 +49,13 @@ public class AuthenticationController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(dbUser);
+                .body(modelMapper.map(dbUser, UserDto.class));
     }
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity registerUser(@Validated(NewUser.class) @RequestBody User user, HttpSession httpSession) {
-
+    public ResponseEntity registerUser(@Validated(NewUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
+        User user = modelMapper.map(userDto, User.class);
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -62,7 +67,7 @@ public class AuthenticationController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(user);
+                .body(modelMapper.map(user, UserDto.class));
     }
 
     @PostMapping(path = "/logout", produces = "application/json")

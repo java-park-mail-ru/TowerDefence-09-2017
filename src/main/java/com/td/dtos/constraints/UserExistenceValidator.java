@@ -1,4 +1,4 @@
-package com.td.models.constraints;
+package com.td.dtos.constraints;
 
 import com.td.services.UserService;
 

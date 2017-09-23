@@ -10,16 +10,14 @@ import java.util.concurrent.atomic.AtomicLong;
 public class UserService {
 
 
-    private static HashMap<String, User> storedByEmail = new HashMap<>();
+    public static final String USER_SESSION_KEY = "user";
+    private static HashMap<String, Long> storedByEmail = new HashMap<>();
     private static HashMap<Long, User> storedById = new HashMap<>();
+    private static AtomicLong idSerial = new AtomicLong(1L);
 
     private static Long generateId() {
         return idSerial.getAndIncrement();
     }
-
-    private static AtomicLong idSerial = new AtomicLong(1L);
-
-    public static final String USER_SESSION_KEY = "user";
 
     public static Boolean checkIfUserExists(Long id) {
         return storedById.containsKey(id);
@@ -34,8 +32,8 @@ public class UserService {
         updateUser(newUser);
     }
 
-    public static void updateUser(User user) {
-        storedByEmail.put(user.getEmail(), user);
+    private static void updateUser(User user) {
+        storedByEmail.put(user.getEmail(), user.getId());
         storedById.put(user.getId(), user);
     }
 
@@ -44,15 +42,31 @@ public class UserService {
     }
 
     public static User getUser(String email) {
-        return storedByEmail.get(email);
+        Long id = storedByEmail.get(email);
+        if (id != null) {
+            return storedById.get(id);
+        }
+        return null;
     }
 
-    public static User removeUser(String email) {
-        return storedByEmail.remove(email);
+    public static boolean removeUser(String email) {
+        Long id = storedByEmail.get(email);
+        if (id != null) {
+            storedById.remove(id);
+            storedByEmail.remove(email);
+            return true;
+        }
+        return false;
     }
 
-    public static User removeUser(Long id) {
-        return storedById.remove(id);
+    public static boolean removeUser(Long id) {
+        User user = storedById.get(id);
+        if (user != null) {
+            storedByEmail.remove(user.getEmail());
+            storedById.remove(id);
+            return true;
+        }
+        return false;
     }
 
 

@@ -1,9 +1,12 @@
 package com.td.controllers;
 
+import com.td.dtos.UserDto;
+import com.td.dtos.groups.UpdateUser;
 import com.td.models.ResponseStatus;
 import com.td.models.User;
-import com.td.models.groups.UpdateUser;
 import com.td.services.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,10 +16,13 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping(path = "/user")
-@CrossOrigin(origins = "https://tdteam.herokuapp.com",
+@CrossOrigin(origins = "http://localhost:8000",
         allowedHeaders = "Content-Type",
         allowCredentials = "true")
-public class UserConroller {
+public class UserController {
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @GetMapping(produces = "application/json")
     @ResponseBody
@@ -31,12 +37,13 @@ public class UserConroller {
         User user = UserService.getUser(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(user);
+                .body(modelMapper.map(user, UserDto.class));
     }
 
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody User user, HttpSession httpSession) {
+    public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
+        User user = modelMapper.map(userDto, User.class);
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != user.getId()) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -62,9 +69,10 @@ public class UserConroller {
         if (password != null && !password.equals("")) {
             oldUser.setPassword(password);
         }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseStatus("Updated"));
+                .body(modelMapper.map(oldUser, UserDto.class));
     }
 
 

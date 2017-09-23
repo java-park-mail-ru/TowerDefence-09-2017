@@ -1,4 +1,4 @@
-package com.td.models.groups;
+package com.td.dtos.groups;
 
 import javax.validation.groups.Default;
 
