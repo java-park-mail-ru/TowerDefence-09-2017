@@ -3,7 +3,8 @@ package com.td.controllers;
 import com.td.dtos.SigninFormDto;
 import com.td.dtos.UserDto;
 import com.td.dtos.groups.NewUser;
-import com.td.models.ResponseStatus;
+import com.td.exceptions.AuthException;
+import com.td.models.ResponseJson;
 import com.td.models.User;
 import com.td.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -27,9 +28,7 @@ public class AuthenticationController {
     public ResponseEntity loginUser(@Valid @RequestBody SigninFormDto user, HttpSession httpSession) {
 
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseStatus("User is already logged in"));
+            throw new AuthException("user is logged in already", "/signin", HttpStatus.CONFLICT);
         }
 
         final String password = user.getPassword();
@@ -37,9 +36,7 @@ public class AuthenticationController {
         final User dbUser = UserService.getUser(user.getEmail());
 
         if (!dbUser.checkPassword(password)) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseStatus("Incorrect password"));
+            throw new AuthException("invalid password", "/signin", HttpStatus.BAD_REQUEST);
         }
 
         httpSession.setAttribute(UserService.USER_SESSION_KEY, dbUser.getId());
@@ -52,11 +49,10 @@ public class AuthenticationController {
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity registerUser(@Validated(NewUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
+
         User user = modelMapper.map(userDto, User.class);
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != null) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseStatus("User is already logged in"));
+            throw new AuthException("user is logged in already", "/signup", HttpStatus.CONFLICT);
         }
 
         UserService.storeUser(user);
@@ -71,14 +67,12 @@ public class AuthenticationController {
     @ResponseBody
     public ResponseEntity logoutUserBySession(HttpSession httpSession) {
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) == null) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseStatus("Unauthorized"));
+            throw new AuthException("unauthorized", "/logout", HttpStatus.UNAUTHORIZED);
         }
         httpSession.invalidate();
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseStatus("Success"));
+                .body(new ResponseJson("Success"));
 
     }
 }

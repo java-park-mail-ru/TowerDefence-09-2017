@@ -4,13 +4,12 @@ package com.td.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ResponseStatus {
+public class ResponseJson {
 
-    @JsonProperty
     private final String status;
 
     @JsonCreator
-    public ResponseStatus(@JsonProperty("response-status") String status) {
+    public ResponseJson(@JsonProperty("status") String status) {
         this.status = status;
     }
 

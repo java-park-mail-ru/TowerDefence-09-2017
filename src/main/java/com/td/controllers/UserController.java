@@ -2,7 +2,7 @@ package com.td.controllers;
 
 import com.td.dtos.UserDto;
 import com.td.dtos.groups.UpdateUser;
-import com.td.models.ResponseStatus;
+import com.td.exceptions.AuthException;
 import com.td.models.User;
 import com.td.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -27,9 +27,7 @@ public class UserController {
 
         Long userId = (Long) httpSession.getAttribute(UserService.USER_SESSION_KEY);
         if (userId == null) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseStatus("Unauthorized"));
+            throw new AuthException("unauthorized", "/user", HttpStatus.UNAUTHORIZED);
         }
         User user = UserService.getUser(userId);
         return ResponseEntity
@@ -42,9 +40,7 @@ public class UserController {
     public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
         User user = modelMapper.map(userDto, User.class);
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != user.getId()) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(new ResponseStatus("Forbidden"));
+            throw new AuthException("it's forbidden to edit other's data", "/edit", HttpStatus.FORBIDDEN);
         }
         final User oldUser = UserService.getUser(user.getId());
         final Long id = user.getId();
@@ -71,6 +67,5 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(modelMapper.map(oldUser, UserDto.class));
     }
-
 
 }
