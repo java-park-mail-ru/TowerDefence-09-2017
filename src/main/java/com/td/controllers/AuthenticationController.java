@@ -18,9 +18,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/auth")
-@CrossOrigin(origins = "http://localhost:8000",
-        allowedHeaders = "Content-Type",
-        allowCredentials = "true")
 public class AuthenticationController {
     @Autowired
     private ModelMapper modelMapper;

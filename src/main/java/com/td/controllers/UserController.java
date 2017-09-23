@@ -16,9 +16,6 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping(path = "/user")
-@CrossOrigin(origins = "http://localhost:8000",
-        allowedHeaders = "Content-Type",
-        allowCredentials = "true")
 public class UserController {
 
     @Autowired
