@@ -38,15 +38,14 @@ public class UserController {
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
-        User user = modelMapper.map(userDto, User.class);
-        if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != user.getId()) {
+        if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != userDto.getId()) {
             throw new AuthException("it's forbidden to edit other's data", "/edit", HttpStatus.FORBIDDEN);
         }
-        final User oldUser = UserService.getUser(user.getId());
-        final Long id = user.getId();
-        final String email = user.getEmail();
-        final String login = user.getLogin();
-        final String password = user.getPassword();
+        final User oldUser = UserService.getUser(userDto.getId());
+        final Long id = userDto.getId();
+        final String email = userDto.getEmail();
+        final String login = userDto.getLogin();
+        final String password = userDto.getPassword();
 
         if (id != 0) {
             oldUser.setId(id);

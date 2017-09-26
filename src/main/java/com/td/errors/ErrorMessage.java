@@ -1,7 +1,6 @@
 package com.td.errors;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.td.errors.views.ErrorViews;
 
@@ -12,11 +11,9 @@ public class ErrorMessage {
     private ErrorTypes type;
 
     @JsonView(ErrorViews.AuthorizationError.class)
-    @JsonProperty("authorization_error")
     private AuthorizationError authorizationError;
 
     @JsonView(ErrorViews.IncorrectRequestData.class)
-    @JsonProperty("incorrect_request_data")
     private List<IncorrectRequestDataError> incorrectRequestDataErrors;
 
     public static ErrorMessageBuilder builder() {
