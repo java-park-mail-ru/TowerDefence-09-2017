@@ -32,7 +32,7 @@ public class UserService {
         updateUser(newUser);
     }
 
-    private static void updateUser(User user) {
+    public static void updateUser(User user) {
         storedByEmail.put(user.getEmail(), user.getId());
         storedById.put(user.getId(), user);
     }

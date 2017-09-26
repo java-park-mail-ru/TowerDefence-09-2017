@@ -13,6 +13,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = PasswordValidatior.class)
 public @interface PasswordValid {
+
     int min() default 0;
 
     int max() default Integer.MAX_VALUE;

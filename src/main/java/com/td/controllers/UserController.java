@@ -53,7 +53,9 @@ public class UserController {
         }
 
         if (email != null && !email.equals("")) {
+            UserService.removeUser(oldUser.getEmail());
             oldUser.setEmail(email);
+            UserService.updateUser(oldUser);
         }
 
         if (login != null && !login.equals("")) {
