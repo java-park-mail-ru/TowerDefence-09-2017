@@ -15,7 +15,7 @@ public class User {
 
     public User() {
         this.login = "";
-        this.password = hashPassword(password);
+        this.password = "";
         this.email = "";
         this.id = 0L;
     }
