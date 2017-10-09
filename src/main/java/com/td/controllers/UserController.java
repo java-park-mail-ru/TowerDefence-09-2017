@@ -18,8 +18,15 @@ import javax.servlet.http.HttpSession;
 @RequestMapping(path = "/user")
 public class UserController {
 
+    private final ModelMapper modelMapper;
+
+    private final UserService userService;
+
     @Autowired
-    private ModelMapper modelMapper;
+    public UserController(ModelMapper modelMapper, UserService userService) {
+        this.modelMapper = modelMapper;
+        this.userService = userService;
+    }
 
     @GetMapping(produces = "application/json")
     @ResponseBody
@@ -29,7 +36,7 @@ public class UserController {
         if (userId == null) {
             throw new AuthException("unauthorized", "/user", HttpStatus.UNAUTHORIZED);
         }
-        User user = UserService.getUser(userId);
+        User user = userService.getUser(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(modelMapper.map(user, UserDto.class));
@@ -41,7 +48,7 @@ public class UserController {
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != userDto.getId()) {
             throw new AuthException("it's forbidden to edit other's data", "/edit", HttpStatus.FORBIDDEN);
         }
-        final User oldUser = UserService.getUser(userDto.getId());
+        final User oldUser = userService.getUser(userDto.getId());
         final Long id = userDto.getId();
         final String email = userDto.getEmail();
         final String login = userDto.getLogin();
@@ -52,9 +59,9 @@ public class UserController {
         }
 
         if (email != null && !email.equals("")) {
-            UserService.removeUser(oldUser.getEmail());
+            userService.removeUser(oldUser.getEmail());
             oldUser.setEmail(email);
-            UserService.updateUser(oldUser);
+            userService.updateUser(oldUser);
         }
 
         if (login != null && !login.equals("")) {

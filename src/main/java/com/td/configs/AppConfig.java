@@ -25,6 +25,7 @@ public class AppConfig {
 
         config.addAllowedHeader("*");
         config.addAllowedHeader("Content-Type");
+
         config.addAllowedMethod("*");
 
         config.setAllowCredentials(true);

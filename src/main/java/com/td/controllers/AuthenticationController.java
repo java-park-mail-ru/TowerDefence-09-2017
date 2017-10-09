@@ -9,6 +9,7 @@ import com.td.models.User;
 import com.td.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,8 +21,15 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/auth")
 public class AuthenticationController {
+    private final ModelMapper modelMapper;
+
+    private final UserService userService;
+
     @Autowired
-    private ModelMapper modelMapper;
+    public AuthenticationController(ModelMapper modelMapper, UserService userService) {
+        this.modelMapper = modelMapper;
+        this.userService = userService;
+    }
 
     @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -33,7 +41,7 @@ public class AuthenticationController {
 
         final String password = user.getPassword();
 
-        final User dbUser = UserService.getUser(user.getEmail());
+        final User dbUser = userService.getUser(user.getEmail());
 
         if (!dbUser.checkPassword(password)) {
             throw new AuthException("invalid password", "/signin", HttpStatus.BAD_REQUEST);
@@ -55,7 +63,7 @@ public class AuthenticationController {
             throw new AuthException("user is logged in already", "/signup", HttpStatus.CONFLICT);
         }
 
-        UserService.storeUser(user);
+        userService.storeUser(user);
         httpSession.setAttribute(UserService.USER_SESSION_KEY, user.getId());
 
         return ResponseEntity
