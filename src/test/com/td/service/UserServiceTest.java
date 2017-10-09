@@ -68,7 +68,7 @@ public class UserServiceTest {
             User updated = userService.getUser(user.getEmail());
             assertEquals(updated.getLogin(), user.getLogin());
             assertEquals(updated.getEmail(), user.getEmail());
-            assertTrue(updated.checkPassword(user.getPassword()));
+            assertTrue(updated.checkPassword(uuid));
         }
     }
 
@@ -81,6 +81,5 @@ public class UserServiceTest {
             assertFalse(userService.checkIfUserExists(user.getLogin()));
         }
     }
-
 
 }
