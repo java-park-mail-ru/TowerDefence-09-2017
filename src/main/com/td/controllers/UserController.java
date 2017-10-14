@@ -1,10 +1,11 @@
 package com.td.controllers;
 
+import com.td.Constants;
+import com.td.daos.UserDao;
 import com.td.domain.User;
 import com.td.dtos.UserDto;
 import com.td.dtos.groups.UpdateUser;
 import com.td.exceptions.AuthException;
-import com.td.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,23 +21,23 @@ public class UserController {
 
     private final ModelMapper modelMapper;
 
-    private final UserService userService;
+    private final UserDao userDao;
 
     @Autowired
-    public UserController(ModelMapper modelMapper, UserService userService) {
+    public UserController(ModelMapper modelMapper, UserDao userDao) {
         this.modelMapper = modelMapper;
-        this.userService = userService;
+        this.userDao = userDao;
     }
 
     @GetMapping(produces = "application/json")
     @ResponseBody
     public ResponseEntity getUserBySession(HttpSession httpSession) {
 
-        Long userId = (Long) httpSession.getAttribute(UserService.USER_SESSION_KEY);
+        Long userId = (Long) httpSession.getAttribute(Constants.USER_SESSION_KEY);
         if (userId == null) {
             throw new AuthException("unauthorized", "/user", HttpStatus.UNAUTHORIZED);
         }
-        User user = userService.getUser(userId);
+        User user = userDao.getUserById(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(modelMapper.map(user, UserDto.class));
@@ -45,14 +46,17 @@ public class UserController {
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
-        if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != userDto.getId()) {
+        if (httpSession.getAttribute(Constants.USER_SESSION_KEY) != userDto.getId()) {
             throw new AuthException("it's forbidden to edit other's data", "/edit", HttpStatus.FORBIDDEN);
         }
-        User user = userService.updateUser(userDto);
+        User updated = userDao.updateUserById(userDto.getId(),
+                userDto.getEmail(),
+                userDto.getLogin(),
+                userDto.getPassword());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(modelMapper.map(user, UserDto.class));
+                .body(modelMapper.map(updated, UserDto.class));
     }
 
 }

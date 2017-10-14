@@ -9,4 +9,6 @@ public class Constants {
     public static final int MIN_LOGIN_LENGHT = 3;
 
     public static final int MAX_LOGIN_LENGTH = 25;
+
+    public static final String USER_SESSION_KEY = "user";
 }

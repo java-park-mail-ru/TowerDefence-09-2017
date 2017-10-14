@@ -1,6 +1,6 @@
 package com.td.dtos.constraints;
 
-import com.td.services.UserService;
+import com.td.daos.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
@@ -11,7 +11,8 @@ public class UserExistenceValidator implements ConstraintValidator<UserExistence
     private boolean isExist;
 
     @Autowired
-    private UserService userService;
+    private UserDao userDao;
+
     @Override
     public void initialize(UserExistence constraint) {
         isExist = constraint.value();
@@ -19,7 +20,7 @@ public class UserExistenceValidator implements ConstraintValidator<UserExistence
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        return userService.checkIfUserExists(email) == isExist;
+        return userDao.checkUser(email) == isExist;
     }
 
 }
