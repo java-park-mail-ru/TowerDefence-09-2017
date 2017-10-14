@@ -78,20 +78,21 @@ public class User {
         this.id = id;
     }
 
-    public void updateEmail(String email){
-        if (email != null){
-            setEmail(email);
-        }
-    }
-    public void updateNickname(String nickname){
-        if (nickname != null){
-            setNickname(nickname);
+    public void updateEmail(String newEmail) {
+        if (newEmail != null) {
+            setEmail(newEmail);
         }
     }
 
-    public void updatePassword(String password){
-        if (password != null){
-            setPassword(password);
+    public void updateNickname(String newNickname) {
+        if (newNickname != null) {
+            setNickname(newNickname);
+        }
+    }
+
+    public void updatePassword(String newPassword) {
+        if (newPassword != null) {
+            setPassword(newPassword);
         }
     }
 

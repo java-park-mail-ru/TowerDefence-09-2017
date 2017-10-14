@@ -2,7 +2,6 @@ package com.td.daos.inerfaces;
 
 import com.td.domain.User;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface IUserDao {
