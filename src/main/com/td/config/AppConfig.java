@@ -1,5 +1,6 @@
 package com.td.config;
 
+import com.td.domain.User;
 import com.td.dtos.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,12 @@ public class AppConfig {
 
     @Bean
     public ModelMapper modelMapper() {
-        return new ModelMapper();
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper
+                .createTypeMap(UserDto.class, User.class)
+                .addMappings(mapper -> mapper.skip(User::setId));
+        return modelMapper;
     }
 
     @Bean
