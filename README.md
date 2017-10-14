@@ -18,7 +18,7 @@ Backend проекта **TD** | Осень 2017
 #### Params
 ```
 {
-  "login": string [required],
+  "nickname": string [required],
   "email": string [required],
   "password": string [required],
 }
@@ -28,7 +28,7 @@ Backend проекта **TD** | Осень 2017
 ```
 {
   "id": int,
-  "login": string,
+  "nickname": string,
   "email": string,
  }
  ```
@@ -50,7 +50,7 @@ Backend проекта **TD** | Осень 2017
 ```
 {
   "id": int,
-  "login": string,
+  "nickname": string,
   "email": string,
  }
  ```
@@ -77,7 +77,7 @@ Backend проекта **TD** | Осень 2017
 ```
 {
   "id": int,
-  "login": string,
+  "nickname": string,
   "email": string,
  }
  ```
@@ -89,7 +89,7 @@ Backend проекта **TD** | Осень 2017
 ```
 {
   "id": int[required],
-  "login": string
+  "nickname": string
   "email": string,
   "password": string,
 }

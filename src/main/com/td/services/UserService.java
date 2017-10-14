@@ -1,6 +1,9 @@
 package com.td.services;
 
-import com.td.models.User;
+import com.td.daos.inerfaces.IUserDao;
+import com.td.domain.User;
+import com.td.dtos.UserDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -9,62 +12,56 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class UserService {
 
+    private final IUserDao userDao;
+
     public static final String USER_SESSION_KEY = "user";
     private HashMap<String, Long> storedByEmail = new HashMap<>();
     private HashMap<Long, User> storedById = new HashMap<>();
     private AtomicLong idSerial = new AtomicLong(1L);
+
+    @Autowired
+    public UserService(IUserDao userDao) {
+        this.userDao = userDao;
+    }
 
     private Long generateId() {
         return idSerial.getAndIncrement();
     }
 
     public Boolean checkIfUserExists(Long id) {
-        return storedById.containsKey(id);
+        return userDao.checkUser(id);
     }
 
     public Boolean checkIfUserExists(String email) {
-        return storedByEmail.containsKey(email);
+        return userDao.checkUser(email);
     }
 
-    public void storeUser(User newUser) {
-        newUser.setId(generateId());
-        updateUser(newUser);
+    public User storeUser(User newUser) {
+        return userDao.storeUser(newUser);
     }
 
-    public void updateUser(User user) {
-        storedByEmail.put(user.getEmail(), user.getId());
-        storedById.put(user.getId(), user);
+    public User updateUser(UserDto user) {
+        return userDao.updateUserById(user.getId(),
+                user.getEmail(),
+                user.getLogin(),
+                user.getPassword());
     }
 
     public User getUser(Long id) {
-        return storedById.get(id);
+        return userDao.getUserById(id);
     }
 
     public User getUser(String email) {
-        Long id = storedByEmail.get(email);
-        if (id != null) {
-            return storedById.get(id);
-        }
-        return null;
+        return userDao.getUserByEmail(email);
     }
 
     public boolean removeUser(String email) {
-        Long id = storedByEmail.get(email);
-        if (id != null) {
-            storedById.remove(id);
-            storedByEmail.remove(email);
-            return true;
-        }
+        /**/
         return false;
     }
 
     public boolean removeUser(Long id) {
-        User user = storedById.get(id);
-        if (user != null) {
-            storedByEmail.remove(user.getEmail());
-            storedById.remove(id);
-            return true;
-        }
+        /**/
         return false;
     }
 

@@ -1,4 +1,4 @@
-package com.td.models;
+package com.td.dtos;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;

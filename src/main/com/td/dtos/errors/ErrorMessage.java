@@ -1,8 +1,8 @@
-package com.td.errors;
+package com.td.dtos.errors;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.td.errors.views.ErrorViews;
+import com.td.dtos.errors.views.ErrorViews;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.td.exceptions;
 
-import com.td.errors.AuthorizationError;
+import com.td.dtos.errors.AuthorizationError;
 import org.springframework.http.HttpStatus;
 
 public class AuthException extends RuntimeException {

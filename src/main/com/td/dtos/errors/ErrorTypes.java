@@ -1,4 +1,4 @@
-package com.td.errors;
+package com.td.dtos.errors;
 
 public enum ErrorTypes {
     INCORRECT_REQUEST_DATA,
