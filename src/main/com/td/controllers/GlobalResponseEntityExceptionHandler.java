@@ -1,9 +1,9 @@
 package com.td.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.td.errors.ErrorMessage;
-import com.td.errors.ErrorTypes;
-import com.td.errors.views.ErrorViews;
+import com.td.dtos.errors.ErrorMessage;
+import com.td.dtos.errors.ErrorTypes;
+import com.td.dtos.errors.views.ErrorViews;
 import com.td.exceptions.AuthException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;

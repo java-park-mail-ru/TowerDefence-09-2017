@@ -1,9 +1,9 @@
 package com.td.controllers;
 
+import com.td.domain.User;
 import com.td.dtos.UserDto;
 import com.td.dtos.groups.UpdateUser;
 import com.td.exceptions.AuthException;
-import com.td.models.User;
 import com.td.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,32 +48,11 @@ public class UserController {
         if (httpSession.getAttribute(UserService.USER_SESSION_KEY) != userDto.getId()) {
             throw new AuthException("it's forbidden to edit other's data", "/edit", HttpStatus.FORBIDDEN);
         }
-        final User oldUser = userService.getUser(userDto.getId());
-        final Long id = userDto.getId();
-        final String email = userDto.getEmail();
-        final String login = userDto.getLogin();
-        final String password = userDto.getPassword();
-
-        if (id != 0) {
-            oldUser.setId(id);
-        }
-
-        if (email != null && !email.equals("")) {
-            userService.removeUser(oldUser.getEmail());
-            oldUser.setEmail(email);
-            userService.updateUser(oldUser);
-        }
-
-        if (login != null && !login.equals("")) {
-            oldUser.setLogin(login);
-        }
-        if (password != null && !password.equals("")) {
-            oldUser.setPassword(password);
-        }
+        User user = userService.updateUser(userDto);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(modelMapper.map(oldUser, UserDto.class));
+                .body(modelMapper.map(user, UserDto.class));
     }
 
 }

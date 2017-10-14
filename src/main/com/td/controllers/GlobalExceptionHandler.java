@@ -2,10 +2,10 @@ package com.td.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.td.errors.ErrorMessage;
-import com.td.errors.ErrorTypes;
-import com.td.errors.IncorrectRequestDataError;
-import com.td.errors.views.ErrorViews;
+import com.td.dtos.errors.ErrorMessage;
+import com.td.dtos.errors.ErrorTypes;
+import com.td.dtos.errors.IncorrectRequestDataError;
+import com.td.dtos.errors.views.ErrorViews;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
