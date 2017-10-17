@@ -93,8 +93,8 @@ public class UserDao implements IUserDao {
 
     @Override
     public User updateUserNickname(User user, String nickname) {
-       user.updateNickname(nickname);
-       return user;
+        user.updateNickname(nickname);
+        return user;
     }
 
     @Override
@@ -105,7 +105,35 @@ public class UserDao implements IUserDao {
 
 
     @Override
-    public User removeUser(User user) {
-        return null;
+    public void removeUser(User user) {
+        em.remove(user);
     }
+
+    @Override
+    public void removeUserById(Long id) {
+        removeUserByParams(id, null, null);
+
+    }
+
+
+    @Override
+    public void removeUserByEmail(String email) {
+        removeUserByParams(null, email, null);
+    }
+
+    @Override
+    public void removeUserByNickname(String nickname) {
+        removeUserByParams(null, null, nickname);
+    }
+
+    @Override
+    public int removeUserByParams(Long id, String email, String nickname) {
+        return em.createQuery("DELETE FROM User u WHERE u.id = :id or u.email = :email or u.nickname = :nickname")
+                .setParameter("id", id)
+                .setParameter("email", email)
+                .setParameter("nickname", nickname)
+                .executeUpdate();
+    }
+
+
 }

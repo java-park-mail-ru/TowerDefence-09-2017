@@ -26,6 +26,8 @@ public class UserDaoTest {
 
     private List<String> uuids;
 
+    static final private String EMAIL_SUFFIX = "@mail.ru";
+
     @Before
     public void init() {
         this.uuids = Stream
@@ -33,8 +35,8 @@ public class UserDaoTest {
                 .limit(25)
                 .collect(Collectors.toList());
         uuids.forEach(uuid -> {
-            User user = dao.createUser(uuid, uuid + "@mail.ru", uuid);
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
+            User user = dao.createUser(uuid, uuid + EMAIL_SUFFIX, uuid);
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
             assertTrue(dao.checkUser(user.getId()));
@@ -46,26 +48,28 @@ public class UserDaoTest {
     @Test
     public void testUserGet() {
         uuids.forEach(uuid -> {
-            User byEmailUser = dao.getUserByEmail(uuid + "@mail.ru");
+            User byEmailUser = dao.getUserByEmail(uuid + EMAIL_SUFFIX);
             User byNicknameUser = dao.getUserByNickanme(uuid);
             assertEquals(byEmailUser, byNicknameUser);
             assertEquals(byEmailUser.getNickname(), uuid);
-            assertEquals(byEmailUser.getEmail(), uuid + "@mail.ru");
+            assertEquals(byEmailUser.getEmail(), uuid + EMAIL_SUFFIX);
         });
     }
 
     @Test
     public void testUserFullUpdate() {
+        String str = "update";
+        String email = str + EMAIL_SUFFIX;
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
-            dao.updateUserById(user.getId(), "update@mail.ru", "update", "update");
+            dao.updateUserById(user.getId(), email, str, str);
 
-            assertEquals(user.getEmail(), "update@mail.ru");
-            assertEquals(user.getNickname(), "update");
-            assertTrue(user.checkPassword("update"));
+            assertEquals(user.getEmail(), email);
+            assertEquals(user.getNickname(), str);
+            assertTrue(user.checkPassword(str));
 
-            dao.updateUserById(user.getId(), uuid + "@mail.ru", uuid, uuid);
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
+            dao.updateUserById(user.getId(), uuid + EMAIL_SUFFIX, uuid, uuid);
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
         });
@@ -73,17 +77,19 @@ public class UserDaoTest {
 
     @Test
     public void testUserEmailUpdate() {
+        String str = "update";
+        String email = str + EMAIL_SUFFIX;
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
-            dao.updateUserEmail(user, "update@mail.ru");
+            dao.updateUserEmail(user, email);
 
-            assertEquals(user.getEmail(), "update@mail.ru");
+            assertEquals(user.getEmail(), email);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
 
-            dao.updateUserById(user.getId(), uuid + "@mail.ru", null, null);
+            dao.updateUserById(user.getId(), uuid + EMAIL_SUFFIX, null, null);
 
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
         });
@@ -91,17 +97,18 @@ public class UserDaoTest {
 
     @Test
     public void testUserNicknameUpdate() {
+        String str = "update";
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
-            dao.updateUserNickname(user, "update");
+            dao.updateUserNickname(user, str);
 
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
-            assertEquals(user.getNickname(), "update");
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
+            assertEquals(user.getNickname(), str);
             assertTrue(user.checkPassword(uuid));
 
             dao.updateUserById(user.getId(), null, uuid, null);
 
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
         });
@@ -109,17 +116,18 @@ public class UserDaoTest {
 
     @Test
     public void testUserPasswordUpdate() {
+        String str = "update";
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
-            dao.updateUserPassword(user, "update");
+            dao.updateUserPassword(user, str);
 
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
-            assertTrue(user.checkPassword("update"));
+            assertTrue(user.checkPassword(str));
 
             dao.updateUserById(user.getId(), null, null, uuid);
 
-            assertEquals(user.getEmail(), uuid + "@mail.ru");
+            assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
         });
@@ -133,5 +141,69 @@ public class UserDaoTest {
         ));
         dao.getUsersByNicknames(uuids)
                 .forEach(user -> assertEquals(trusted.get(user.getNickname()), user));
+    }
+
+    @Test
+    public void testUserRemoveById() {
+        uuids.forEach(uuid -> {
+            User user = dao.getUserByNickanme(uuid);
+            dao.removeUserById(user.getId());
+            assertFalse(dao.checkUser(user.getId()));
+            User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
+            assertEquals(recreated.getNickname(), user.getNickname());
+            assertEquals(recreated.getEmail(), user.getEmail());
+        });
+    }
+
+    @Test
+    public void testUserRemoveByEmail() {
+        uuids.forEach(uuid -> {
+            User user = dao.getUserByNickanme(uuid);
+            dao.removeUserByEmail(user.getEmail());
+            assertFalse(dao.checkUser(user.getId()));
+            User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
+            assertEquals(recreated.getNickname(), user.getNickname());
+            assertEquals(recreated.getEmail(), user.getEmail());
+        });
+    }
+
+    @Test
+    public void testUserRemoveByNickname() {
+        uuids.forEach(uuid -> {
+            User user = dao.getUserByNickanme(uuid);
+            dao.removeUserByNickname(user.getNickname());
+            assertFalse(dao.checkUser(user.getId()));
+            User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
+            assertEquals(recreated.getNickname(), user.getNickname());
+            assertEquals(recreated.getEmail(), user.getEmail());
+        });
+    }
+
+    @Test
+    public void testUserRemoveByParams() {
+        uuids.forEach(uuid -> {
+            int expZero = dao.removeUserByParams(null, null, null);
+            assertEquals(0, expZero);
+
+            User user = dao.getUserByNickanme(uuid);
+            int expOne = dao.removeUserByParams(user.getId(), user.getEmail(), user.getNickname());
+            assertFalse(dao.checkUser(user.getId()));
+            assertEquals(1, expOne);
+
+            User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
+            dao.removeUser(recreated);
+            assertFalse(dao.checkUser(recreated.getId()));
+            dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
+        });
+        User initial = dao.createUser("new", "new" + EMAIL_SUFFIX, "new");
+        uuids.stream()
+                .reduce(initial.getNickname(),
+                        (prev, current) -> {
+                            int expTwo = dao.removeUserByParams(null, prev + EMAIL_SUFFIX, current);
+                            assertEquals(2, expTwo);
+                            dao.createUser(prev, prev + EMAIL_SUFFIX, prev);
+                            dao.createUser(current, current + EMAIL_SUFFIX, current);
+                            return current;
+                        });
     }
 }

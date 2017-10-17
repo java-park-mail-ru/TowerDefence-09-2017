@@ -17,11 +17,19 @@ public interface IUserDao {
 
     List<User> getUsersByNicknames(List<String> nicknames);
 
-    User createUser(String nickname, String email, String login);
+    User createUser(String nickname, String email, String password);
 
     User storeUser(User user);
 
-    User removeUser(User user);
+    void removeUser(User user);
+
+    void removeUserById(Long id);
+
+    void removeUserByEmail(String email);
+
+    void removeUserByNickname(String nickname);
+
+    int removeUserByParams(Long id,  String email, String nickname);
 
     User updateUserById(Long id, String email, String login, String password);
 
@@ -30,5 +38,7 @@ public interface IUserDao {
     User updateUserNickname(User user, String email);
 
     User updateUserPassword(User user, String email);
+
+
 
 }
