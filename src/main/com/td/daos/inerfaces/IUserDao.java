@@ -29,7 +29,7 @@ public interface IUserDao {
 
     void removeUserByNickname(String nickname);
 
-    int removeUserByParams(Long id,  String email, String nickname);
+    int removeUserByParams(Long id, String email, String nickname);
 
     User updateUserById(Long id, String email, String login, String password);
 
@@ -38,7 +38,4 @@ public interface IUserDao {
     User updateUserNickname(User user, String email);
 
     User updateUserPassword(User user, String email);
-
-
-
 }

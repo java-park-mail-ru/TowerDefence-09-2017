@@ -11,8 +11,10 @@ public class Achievement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String titile;
+    @Column(nullable = false)
+    private String title;
 
+    @Column(nullable = false)
     private String description;
 
     @URL
@@ -29,12 +31,12 @@ public class Achievement {
         this.id = id;
     }
 
-    public String getTitile() {
-        return titile;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTitile(String titile) {
-        this.titile = titile;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {

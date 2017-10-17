@@ -2,7 +2,9 @@ package com.td.daos;
 
 import com.td.domain.User;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +29,8 @@ public class UserDaoTest {
     private List<String> uuids;
 
     static final private String EMAIL_SUFFIX = "@mail.ru";
+    @Rule
+    public final ExpectedException exp = ExpectedException.none();
 
     @Before
     public void init() {

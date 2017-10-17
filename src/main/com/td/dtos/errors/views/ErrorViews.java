@@ -13,4 +13,9 @@ public class ErrorViews {
     public static class IncorrectRequestData extends Default {
 
     }
+
+    public static class TryAgainError extends Default {
+
+    }
+
 }

@@ -1,11 +1,18 @@
 package com.td.daos;
 
+import com.td.daos.exceptions.UserDaoAlreadyExists;
+import com.td.daos.exceptions.UserDaoInvalidData;
+import com.td.daos.exceptions.UserDaoUpdateFail;
 import com.td.daos.inerfaces.IUserDao;
 import com.td.domain.User;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -20,9 +27,13 @@ public class UserDao implements IUserDao {
 
     @Override
     public User getUserByEmail(String email) {
-        return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
-                .setParameter("email", email)
-                .getSingleResult();
+        try {
+            return em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 
     @Override
@@ -44,9 +55,13 @@ public class UserDao implements IUserDao {
 
     @Override
     public User getUserByNickanme(String nickname) {
-        return em.createQuery("SELECT u FROM User u WHERE u.nickname = :nickname", User.class)
-                .setParameter("nickname", nickname)
-                .getSingleResult();
+        try {
+            return em.createQuery("SELECT u FROM User u WHERE u.nickname = :nickname", User.class)
+                    .setParameter("nickname", nickname)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 
     @Override
@@ -63,44 +78,94 @@ public class UserDao implements IUserDao {
 
     @Override
     public User createUser(String nickname, String email, String password) {
-        User user = new User();
-        user.setNickname(nickname);
-        user.setEmail(email);
-        user.setPassword(password);
-        return storeUser(user);
+        try {
+            User user = new User();
+            user.setNickname(nickname);
+            user.setEmail(email);
+            user.setPassword(password);
+            return storeUser(user);
+        } catch (PersistenceException except) {
+            if (except.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
+                throw new UserDaoInvalidData(violation.getConstraintName(), except);
+            }
+            throw except;
+        }
     }
 
     @Override
     public User storeUser(User user) {
-        em.persist(user);
-        return user;
+        try {
+            em.persist(user);
+            return user;
+        } catch (EntityExistsException except) {
+            throw new UserDaoAlreadyExists(user.getId(), except);
+        } catch (PersistenceException except) {
+            if (except.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
+                throw new UserDaoInvalidData(violation.getConstraintName(), except);
+            }
+            throw except;
+        }
     }
 
     @Override
     public User updateUserById(Long id, String email, String login, String password) {
-        User user = getUserById(id);
-        user.updateEmail(email);
-        user.updateNickname(login);
-        user.updatePassword(password);
-        return user;
+        try {
+            User user = getUserById(id);
+            user.updateEmail(email);
+            user.updateNickname(login);
+            user.updatePassword(password);
+            return user;
+        } catch (PersistenceException except) {
+            if (except.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
+                throw new UserDaoInvalidData(violation.getConstraintName(), except);
+            }
+            throw except;
+        }
     }
 
     @Override
     public User updateUserEmail(User user, String email) {
-        user.updateEmail(email);
-        return user;
+        try {
+            user.updateEmail(email);
+            return user;
+        } catch (PersistenceException except) {
+            if (except.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
+                throw new UserDaoUpdateFail("email", violation.getConstraintName(), except);
+            }
+            throw except;
+        }
     }
 
     @Override
     public User updateUserNickname(User user, String nickname) {
-        user.updateNickname(nickname);
-        return user;
+        try {
+            user.updateNickname(nickname);
+            return user;
+        } catch (PersistenceException except) {
+            if (except.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
+                throw new UserDaoUpdateFail("nickname", violation.getConstraintName(), except);
+            }
+            throw except;
+        }
     }
 
     @Override
     public User updateUserPassword(User user, String password) {
-        user.updatePassword(password);
-        return user;
+        try {
+            user.updatePassword(password);
+            return user;
+        } catch (PersistenceException except) {
+            if (except.getCause() instanceof ConstraintViolationException) {
+                ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
+                throw new UserDaoUpdateFail("password", violation.getConstraintName(), except);
+            }
+            throw except;
+        }
     }
 
 
@@ -114,7 +179,6 @@ public class UserDao implements IUserDao {
         removeUserByParams(id, null, null);
 
     }
-
 
     @Override
     public void removeUserByEmail(String email) {
@@ -134,6 +198,4 @@ public class UserDao implements IUserDao {
                 .setParameter("nickname", nickname)
                 .executeUpdate();
     }
-
-
 }

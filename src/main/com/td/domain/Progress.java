@@ -1,11 +1,7 @@
 package com.td.domain;
 
 
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -22,6 +18,7 @@ public class Progress implements Serializable {
     @JoinColumn(name = "achievement_id", referencedColumnName = "id")
     private Achievement achievement;
 
+    @Column(nullable = false)
     private BigDecimal completed;
 
 

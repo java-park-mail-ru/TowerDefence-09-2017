@@ -53,7 +53,6 @@ public class UserController {
                 userDto.getEmail(),
                 userDto.getLogin(),
                 userDto.getPassword());
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(modelMapper.map(updated, UserDto.class));

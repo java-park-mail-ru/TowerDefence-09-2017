@@ -16,6 +16,9 @@ public class ErrorMessage {
     @JsonView(ErrorViews.IncorrectRequestData.class)
     private List<IncorrectRequestDataError> incorrectRequestDataErrors;
 
+    @JsonView(ErrorViews.TryAgainError.class)
+    private TryAgainError tryAgainError;
+
     public static ErrorMessageBuilder builder() {
         return new ErrorMessage().new ErrorMessageBuilder();
     }
@@ -51,6 +54,11 @@ public class ErrorMessage {
 
         public ErrorMessageBuilder setIncorrectRequestDataErrors(List<IncorrectRequestDataError> errors) {
             ErrorMessage.this.incorrectRequestDataErrors = errors;
+            return this;
+        }
+
+        public ErrorMessageBuilder setTryAgainError(TryAgainError error) {
+            ErrorMessage.this.tryAgainError = error;
             return this;
         }
 

@@ -28,3 +28,4 @@ public class AuthException extends RuntimeException {
         this.status = status;
     }
 }
+

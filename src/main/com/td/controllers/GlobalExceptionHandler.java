@@ -6,6 +6,8 @@ import com.td.dtos.errors.ErrorMessage;
 import com.td.dtos.errors.ErrorTypes;
 import com.td.dtos.errors.IncorrectRequestDataError;
 import com.td.dtos.errors.views.ErrorViews;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,24 +19,26 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private final Logger log = LoggerFactory.getLogger(GlobalResponseEntityExceptionHandler.class);
 
     @ExceptionHandler
     @JsonView(ErrorViews.IncorrectRequestData.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleMethodArgumentNotValid(MethodArgumentNotValidException exception) throws JsonProcessingException {
+        log.error("Invalid object: ", exception);
         List<IncorrectRequestDataError> errors = exception
                 .getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(fieldError ->
-                        new IncorrectRequestDataError(fieldError.getField(), fieldError.getDefaultMessage()))
+                .map(fieldError -> {
+                    log.warn("Field {}: {} is invalid", fieldError.getField(), fieldError.getRejectedValue());
+                    return new IncorrectRequestDataError(fieldError.getField(), fieldError.getDefaultMessage());
+                })
                 .collect(Collectors.toList());
-
         return ErrorMessage
                 .builder()
                 .setType(ErrorTypes.INCORRECT_REQUEST_DATA)
                 .setIncorrectRequestDataErrors(errors)
                 .build();
-
     }
 }
