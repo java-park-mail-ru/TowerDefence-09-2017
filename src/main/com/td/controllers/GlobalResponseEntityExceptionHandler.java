@@ -2,7 +2,6 @@ package com.td.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.td.daos.exceptions.abstracts.DaoException;
-import com.td.daos.exceptions.abstracts.DaoInvalidData;
 import com.td.dtos.errors.ErrorMessage;
 import com.td.dtos.errors.ErrorTypes;
 import com.td.dtos.errors.TryAgainError;
@@ -28,7 +27,8 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
     @ExceptionHandler(value = AuthException.class)
     @JsonView(ErrorViews.AuthorizationError.class)
     protected ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
-        log.error("Autthentication error: ", ex);
+        log.error("Authentication error: {} ", ex.getError(), ex);
+
         ErrorMessage message = ErrorMessage
                 .builder()
                 .setType(ErrorTypes.AUTHORIZATION_ERROR)
@@ -40,8 +40,8 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler(value = DaoException.class)
     @JsonView(ErrorViews.TryAgainError.class)
-    protected ResponseEntity<Object> handleDaoInvalidDataException(DaoInvalidData ex, WebRequest request) {
-        log.error("Dao internal error: ", ex);
+    protected ResponseEntity<Object> handleDaoInvalidDataException(DaoException ex, WebRequest request) {
+        log.error("Dao internal error in entity {}", ex.getEntity(), ex);
         ErrorMessage message = ErrorMessage
                 .builder()
                 .setType(ErrorTypes.TRY_AGAIN_ERROR)

@@ -25,16 +25,17 @@ public class GlobalExceptionHandler {
     @JsonView(ErrorViews.IncorrectRequestData.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handleMethodArgumentNotValid(MethodArgumentNotValidException exception) throws JsonProcessingException {
-        log.error("Invalid object: ", exception);
         List<IncorrectRequestDataError> errors = exception
                 .getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(fieldError -> {
-                    log.warn("Field {}: {} is invalid", fieldError.getField(), fieldError.getRejectedValue());
+                    log.error("Field {}: {} {}", fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
                     return new IncorrectRequestDataError(fieldError.getField(), fieldError.getDefaultMessage());
                 })
                 .collect(Collectors.toList());
+
+        log.error("Invalid object comes to controller ", exception);
         return ErrorMessage
                 .builder()
                 .setType(ErrorTypes.INCORRECT_REQUEST_DATA)
