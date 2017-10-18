@@ -1,7 +1,6 @@
 package com.td.dtos;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.td.Constants;
 import com.td.dtos.constraints.PasswordValid;
@@ -48,7 +47,7 @@ public class UserDto {
     private Long id;
 
 
-    public UserDto( String login,
+    public UserDto(String login,
                    String password,
                    String email,
                    Long id) {

@@ -1,5 +1,7 @@
 package com.td.daos;
 
+import com.td.daos.exceptions.UserDaoInvalidData;
+import com.td.daos.exceptions.UserDaoUpdateFail;
 import com.td.domain.User;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +31,7 @@ public class UserDaoTest {
     private List<String> uuids;
 
     static final private String EMAIL_SUFFIX = "@mail.ru";
+
     @Rule
     public final ExpectedException exp = ExpectedException.none();
 
@@ -36,7 +39,7 @@ public class UserDaoTest {
     public void init() {
         this.uuids = Stream
                 .generate(() -> UUID.randomUUID().toString().substring(0, 25))
-                .limit(25)
+                .limit(5)
                 .collect(Collectors.toList());
         uuids.forEach(uuid -> {
             User user = dao.createUser(uuid, uuid + EMAIL_SUFFIX, uuid);
@@ -210,4 +213,28 @@ public class UserDaoTest {
                             return current;
                         });
     }
+
+    @Test
+    public void testDuplicateUserNickname(){
+        String str = uuids.get(0);
+        exp.expect(UserDaoInvalidData.class);
+        dao.createUser(str, str + str + EMAIL_SUFFIX, str);
+
+    }
+
+    @Test
+    public void testDuplicateUserEmail(){
+        String str = uuids.get(0);
+        exp.expect(UserDaoInvalidData.class);
+        dao.createUser("new", str + EMAIL_SUFFIX, str);
+    }
+
+//    @Test
+//    public void testDuplicateUserNicknameUpdate(){
+//        String str = uuids.get(0);
+//        dao.updateUserNickname(dao.getUserByNickanme(str), uuids.get(1));
+//        exp.expect(UserDaoUpdateFail.class);
+//        dao.getUserByNickanme(uuids.get(1));
+//    }
+
 }
