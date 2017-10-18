@@ -19,4 +19,4 @@ services:
 
 before_script:
   - psql -c "CREATE USER tester WITH SUPERUSER PASSWORD 'travis_test';" -U postgres
-  - psql -c createdb -O tester travis_test  -U postgres;
+  - psql -c createdb -O tester travis_test  -U postgres
