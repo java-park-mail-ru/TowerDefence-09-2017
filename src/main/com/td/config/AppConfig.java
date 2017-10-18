@@ -18,7 +18,12 @@ public class AppConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper
                 .createTypeMap(UserDto.class, User.class)
-                .addMappings(mapper -> mapper.skip(User::setId));
+
+                .addMappings(mapper -> mapper.skip(User::setId))
+                .addMapping(UserDto::getLogin, User::setNickname);
+        modelMapper
+                .createTypeMap(User.class, UserDto.class)
+                .addMapping(User::getNickname, UserDto::setLogin);
         return modelMapper;
     }
 

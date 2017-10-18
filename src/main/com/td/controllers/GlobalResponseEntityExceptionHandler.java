@@ -24,6 +24,9 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     private final Logger log = LoggerFactory.getLogger(GlobalResponseEntityExceptionHandler.class);
 
+
+    @ExceptionHandler(value = AuthException.class)
+    @JsonView(ErrorViews.AuthorizationError.class)
     protected ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
         log.error("Autthentication error: ", ex);
         ErrorMessage message = ErrorMessage
