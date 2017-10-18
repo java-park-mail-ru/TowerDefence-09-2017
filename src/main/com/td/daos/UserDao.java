@@ -63,11 +63,12 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public User getUserByNickanme(String nickname) {
+    public User getUserByNickname(String nickname) {
         try {
-            return em.createQuery("SELECT u FROM User u WHERE u.nickname = :nickname", User.class)
+            User user = em.createQuery("SELECT u FROM User u WHERE u.nickname = :nickname", User.class)
                     .setParameter("nickname", nickname)
                     .getSingleResult();
+          return user;
         } catch (NoResultException ex) {
             return null;
         }
@@ -125,6 +126,7 @@ public class UserDao implements IUserDao {
             user.updateEmail(email);
             user.updateNickname(login);
             user.updatePassword(password);
+            em.flush();
             return user;
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {
@@ -138,7 +140,8 @@ public class UserDao implements IUserDao {
     @Override
     public User updateUserEmail(User user, String email) {
         try {
-            user.updateEmail(email);
+            user.setEmail(email);
+            em.flush();
             return user;
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {
@@ -153,6 +156,7 @@ public class UserDao implements IUserDao {
     public User updateUserNickname(User user, String nickname) {
         try {
             user.updateNickname(nickname);
+            em.flush();
             return user;
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {
@@ -167,6 +171,7 @@ public class UserDao implements IUserDao {
     public User updateUserPassword(User user, String password) {
         try {
             user.updatePassword(password);
+            em.flush();
             return user;
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {

@@ -13,7 +13,7 @@ public interface IUserDao {
 
     boolean checkUserById(Long id);
 
-    User getUserByNickanme(String nickname);
+    User getUserByNickname(String nickname);
 
     User getUserById(Long id);
 
