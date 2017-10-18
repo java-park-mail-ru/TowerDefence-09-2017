@@ -5,9 +5,7 @@ branches:
   only:
   - dev
 env:
-  - DB_URL=jdbc:postgresql://localhost:5432/travis_test
-  - DB_USER=tester
-  - DB_PASSWORD=travis_test
+    - DB_URL=jdbc:postgresql://localhost:5432/travis_test DB_USER=tester DB_PASSWORD=travis_test
 install:
 - mvn clean install
 script:
