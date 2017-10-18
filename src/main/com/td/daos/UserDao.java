@@ -37,7 +37,7 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public boolean checkUser(String email) {
+    public boolean checkUserByEmail(String email) {
         Long count = em.createQuery("SELECT count(u) FROM User u WHERE u.email = :email", Long.class)
                 .setParameter("email", email)
                 .getSingleResult();
@@ -45,7 +45,16 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public boolean checkUser(Long id) {
+    public boolean checkUserByNickname(String nickname) {
+        Long count = em.createQuery("SELECT count(u) FROM User u WHERE u.nickname = :nickname", Long.class)
+                .setParameter("nickname", nickname)
+                .getSingleResult();
+        return count == 1;
+    }
+
+
+    @Override
+    public boolean checkUserById(Long id) {
         Long count = em.createQuery("SELECT count(u) FROM User u WHERE u.id = :id", Long.class)
                 .setParameter("id", id)
                 .getSingleResult();

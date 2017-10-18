@@ -7,9 +7,11 @@ import java.util.List;
 public interface IUserDao {
     User getUserByEmail(String email);
 
-    boolean checkUser(String email);
+    boolean checkUserByEmail(String email);
 
-    boolean checkUser(Long id);
+    boolean checkUserByNickname(String nickname);
+
+    boolean checkUserById(Long id);
 
     User getUserByNickanme(String nickname);
 

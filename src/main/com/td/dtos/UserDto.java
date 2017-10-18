@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.td.Constants;
 import com.td.dtos.constraints.PasswordValid;
+import com.td.dtos.constraints.UniqueNickname;
 import com.td.dtos.constraints.UserExistence;
 import com.td.dtos.groups.NewUser;
 import com.td.dtos.groups.UpdateUser;
@@ -26,7 +27,7 @@ public class UserDto {
     @Pattern(
             message = "Login field contains incorrect characters",
             regexp = "^\\w*$")
-    @JsonProperty
+    @UniqueNickname(message = "Nickname already registered")
     private String login;
 
     @NotNull(message = "Password field is required", groups = NewUser.class)
@@ -39,18 +40,18 @@ public class UserDto {
     @NotBlank(message = "Email field is required", groups = NewUser.class)
     @Email(message = "Invalid email")
     @UserExistence(value = false, message = "Email already registered")
-    @JsonProperty
+
     private String email;
 
-    @JsonProperty
+
     @NotNull(message = "Id field is required", groups = UpdateUser.class)
     private Long id;
 
-    @JsonCreator
-    public UserDto(@JsonProperty("login") String login,
-                   @JsonProperty("password") String password,
-                   @JsonProperty("email") String email,
-                   @JsonProperty("id") Long id) {
+
+    public UserDto( String login,
+                   String password,
+                   String email,
+                   Long id) {
         this.login = login;
         this.password = password;
         this.email = email;

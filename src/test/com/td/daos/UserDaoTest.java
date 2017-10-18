@@ -43,8 +43,8 @@ public class UserDaoTest {
             assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
-            assertTrue(dao.checkUser(user.getId()));
-            assertTrue(dao.checkUser(user.getEmail()));
+            assertTrue(dao.checkUserById(user.getId()));
+            assertTrue(dao.checkUserByEmail(user.getEmail()));
             assertNotNull(user.getId());
         });
     }
@@ -152,7 +152,7 @@ public class UserDaoTest {
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
             dao.removeUserById(user.getId());
-            assertFalse(dao.checkUser(user.getId()));
+            assertFalse(dao.checkUserById(user.getId()));
             User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
             assertEquals(recreated.getNickname(), user.getNickname());
             assertEquals(recreated.getEmail(), user.getEmail());
@@ -164,7 +164,7 @@ public class UserDaoTest {
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
             dao.removeUserByEmail(user.getEmail());
-            assertFalse(dao.checkUser(user.getId()));
+            assertFalse(dao.checkUserById(user.getId()));
             User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
             assertEquals(recreated.getNickname(), user.getNickname());
             assertEquals(recreated.getEmail(), user.getEmail());
@@ -176,7 +176,7 @@ public class UserDaoTest {
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickanme(uuid);
             dao.removeUserByNickname(user.getNickname());
-            assertFalse(dao.checkUser(user.getId()));
+            assertFalse(dao.checkUserById(user.getId()));
             User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
             assertEquals(recreated.getNickname(), user.getNickname());
             assertEquals(recreated.getEmail(), user.getEmail());
@@ -191,12 +191,12 @@ public class UserDaoTest {
 
             User user = dao.getUserByNickanme(uuid);
             int expOne = dao.removeUserByParams(user.getId(), user.getEmail(), user.getNickname());
-            assertFalse(dao.checkUser(user.getId()));
+            assertFalse(dao.checkUserById(user.getId()));
             assertEquals(1, expOne);
 
             User recreated = dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
             dao.removeUser(recreated);
-            assertFalse(dao.checkUser(recreated.getId()));
+            assertFalse(dao.checkUserById(recreated.getId()));
             dao.createUser(user.getNickname(), user.getEmail(), user.getPassword());
         });
         User initial = dao.createUser("new", "new" + EMAIL_SUFFIX, "new");

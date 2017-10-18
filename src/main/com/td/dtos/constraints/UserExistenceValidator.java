@@ -20,7 +20,7 @@ public class UserExistenceValidator implements ConstraintValidator<UserExistence
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        return userDao.checkUser(email) == isExist;
+        return userDao.checkUserByEmail(email) == isExist;
     }
 
 }
