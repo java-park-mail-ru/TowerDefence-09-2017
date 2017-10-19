@@ -1,10 +1,8 @@
 package com.td.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonAutoDetect
 public class TestUserDto {
     private String login;
 
@@ -23,13 +21,6 @@ public class TestUserDto {
         this.password = password;
         this.email = email;
         this.id = id;
-    }
-
-    public TestUserDto() {
-        this.login = "";
-        this.password = "";
-        this.email = "";
-        this.id = 0L;
     }
 
     public String getLogin() {

@@ -2,9 +2,9 @@ package com.td.dtos;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.td.dtos.constraints.UserExistence;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @JsonAutoDetect
