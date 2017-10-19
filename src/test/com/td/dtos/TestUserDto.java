@@ -16,9 +16,9 @@ public class TestUserDto {
 
     @JsonCreator
     public TestUserDto(@JsonProperty("login") String login,
-                   @JsonProperty("password") String password,
-                   @JsonProperty("email") String email,
-                   @JsonProperty("id") Long id) {
+                       @JsonProperty("password") String password,
+                       @JsonProperty("email") String email,
+                       @JsonProperty("id") Long id) {
         this.login = login;
         this.password = password;
         this.email = email;
