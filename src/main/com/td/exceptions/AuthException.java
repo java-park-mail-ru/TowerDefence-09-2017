@@ -8,6 +8,7 @@ public class AuthException extends RuntimeException {
     private HttpStatus status;
 
     public AuthException(String message, String path, HttpStatus status) {
+        super(message);
         this.error = new AuthorizationError(message, path);
         this.status = status;
     }

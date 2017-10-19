@@ -46,7 +46,9 @@ public class UserController {
     @PostMapping(path = "/edit", consumes = "application/json", produces = "application/json")
     @ResponseBody
     public ResponseEntity editUser(@Validated(UpdateUser.class) @RequestBody UserDto userDto, HttpSession httpSession) {
-        if (httpSession.getAttribute(Constants.USER_SESSION_KEY) != userDto.getId()) {
+        Long userId = (Long) httpSession.getAttribute(Constants.USER_SESSION_KEY);
+
+        if (userId == null || +userDto.getId() != userId) {
             throw new AuthException("it's forbidden to edit other's data", "/edit", HttpStatus.FORBIDDEN);
         }
         User updated = userDao.updateUserById(userDto.getId(),

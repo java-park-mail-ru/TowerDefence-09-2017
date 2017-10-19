@@ -67,7 +67,7 @@ public class AuthenticationController {
         httpSession.setAttribute(Constants.USER_SESSION_KEY, user.getId());
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(HttpStatus.OK)
                 .body(modelMapper.map(user, UserDto.class));
     }
 
