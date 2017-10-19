@@ -8,8 +8,8 @@ import com.td.dtos.constraints.UniqueNickname;
 import com.td.dtos.constraints.UserExistence;
 import com.td.dtos.groups.NewUser;
 import com.td.dtos.groups.UpdateUser;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
+import  javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
