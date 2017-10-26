@@ -246,7 +246,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testSignupWithSameNickname() throws Exception{
+    public void testSignupWithSameNickname() throws Exception {
         TestUserDto some = new TestUserDto(
                 "some",
                 "password",
@@ -272,6 +272,40 @@ public class AuthControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("type").value("incorrect_request_data"))
                 .andExpect(jsonPath("$.incorrectRequestDataErrors[0].fieldName").value("login"));
+    }
+
+    @Test
+    public void testSignupAlreadySignedIn() throws Exception {
+        TestUserDto testUser = new TestUserDto(
+                "SignupAlreadySignedIn",
+                "password",
+                "SASI@mail.ru",
+                null
+        );
+        Cookie session = this.mockMvc
+                .perform(post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testUser)))
+                .andReturn().getResponse().getCookie("SESSION");
+
+        TestUserDto otherUser = new TestUserDto(
+                "SASIOtherUser",
+                "password",
+                "SASIOtherUser@mail.ru",
+                null
+        );
+
+        this.mockMvc
+                .perform(post("/auth/signup")
+                        .cookie(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(otherUser)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testSigninAlreadySignedIn() throws Exception {
+
     }
 
 
