@@ -1,12 +1,11 @@
-package com.td.models.constraints;
+package com.td.dtos.constraints;
 
+import javax.validation.Constraint;
+import javax.validation.Payload;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
-
 
 
 @Target({ElementType.FIELD})

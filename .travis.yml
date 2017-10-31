@@ -1,10 +1,30 @@
 language: java
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 branches:
   only:
   - dev
+env:
+    - DB_URL=jdbc:postgresql://localhost:5432/travis_test DB_USER=tester DB_PASSWORD=travis_test
+
+services:
+  - postgresql
+
+before_install:
+  - psql -c "CREATE USER tester WITH SUPERUSER PASSWORD 'travis_test';" -U postgres
+  - psql -c "CREATE DATABASE travis_test;" -U postgres
+  - psql -c "GRANT ALL ON DATABASE travis_test TO tester;" -U postgres
 
 install:
-  - mvn clean install
+- mvn clean install
+
+script:
+- mvn verify
+
+deploy:
+  provider: heroku
+  api_key:
+    secure: XZJSnhn1s3IGYUy/mLWwlb4EPAx7wvS0YdEGbLIRv2W91mx7nQX/tlONO9zo5Z3XDAxsJ9TGwwOAA4D5o7BQPpnl3Q9bUJk0BHKQZGSf5+Zx2rfVfWMuovAgT8uk0+8gbj0Avejd0k+I6YdEm1zhr36+bJ2575DGMLO8yJpGWj3C7/qT6ItZ5IAvrOhs1H3GmNyKuDmrMmb9Ay0ERa6YOc+ymCXraTyIR7ZeNdScvQ3deLy5q+3zQOs56jXbIW9UiNS5Bfwsj2nDircjq5rj0RGyCBBLTX8yGfsFukJAz/Nf4CHYbEUQgKqhKbevMatjFcNlXsNmgeipYh2oY8vh79tk2e+BMoB2sbBC5g04Tl952RD9+OpvFPR9gPYFl8asnFzvfzJd5ah9/UT5wVlOszlNYNo81G5KAofb2Hfi+D0/Aq6UAqSc0FhVZw2GCdpZZXp0ZHjvoxDwkcT34yVei3LASCM+aW6E+24aoYYgEDM0HQBCSY2rRc69qsylxWTmLGJ3Lkm0Cyu0EpTomDne+UzOz4hw/8Y8NCU68teMUNb9D7yB1raOEa8omsrpGbMojKTmyQHMcjFOmXqWNUJ6twnveQ6oHJP9WsQlnvVTcxZKFTQiFqlL289VyfRW8PHJF+bc7KIYE4JnnsNH5MxB6bvTdgXoR1rYh1NmyK8QaHg=
+  app: td-java
+  on: dev
+
