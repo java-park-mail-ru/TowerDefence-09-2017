@@ -45,7 +45,6 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
-        System.out.println("conntection established");
         final Long id = (Long) webSocketSession.getAttributes().get(USER_SESSION_KEY);
         if (id == null || userService.getUserById(id) == null) {
             closeSession(webSocketSession, UNAUTHORIZED);
