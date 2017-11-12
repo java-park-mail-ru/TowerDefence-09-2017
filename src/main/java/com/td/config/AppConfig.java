@@ -2,15 +2,23 @@ package com.td.config;
 
 import com.td.domain.User;
 import com.td.dtos.UserDto;
+import com.td.websocket.GameSocketHandler;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 
-@Configuration
+@SpringBootConfiguration
 public class AppConfig {
+
+    @Bean
+    public WebSocketHandler gameWebSocketHandler() {
+        return new PerConnectionWebSocketHandler(GameSocketHandler.class);
+    }
 
     @Bean
     public ModelMapper modelMapper() {
@@ -42,8 +50,11 @@ public class AppConfig {
 
         config.setAllowCredentials(true);
 
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/auth/*", config);
+
+        source.registerCorsConfiguration("/user/*", config);
         return new CorsFilter(source);
     }
+
 
 }
