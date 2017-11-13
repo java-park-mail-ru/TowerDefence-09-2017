@@ -6,6 +6,8 @@ import com.td.websocket.GameSocketHandler;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -33,6 +35,14 @@ public class AppConfig {
                 .createTypeMap(User.class, UserDto.class)
                 .addMapping(User::getNickname, UserDto::setLogin);
         return modelMapper;
+    }
+
+    @Bean
+    public TaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler threadPoolScheduler = new ThreadPoolTaskScheduler();
+        threadPoolScheduler.setThreadNamePrefix("td-");
+        threadPoolScheduler.setPoolSize(2);
+        return threadPoolScheduler;
     }
 
     @Bean

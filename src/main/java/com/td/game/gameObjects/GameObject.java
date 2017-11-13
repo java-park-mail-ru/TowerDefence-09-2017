@@ -1,4 +1,39 @@
 package com.td.game.gameObjects;
 
-public class GameObject {
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.atomic.AtomicLong;
+
+public abstract class GameObject {
+
+    private static final AtomicLong ID_SOURCE = new AtomicLong(0);
+
+    @JsonProperty("id")
+    @NotNull
+    private final Long id;
+
+    GameObject() {
+        id = ID_SOURCE.getAndIncrement();
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameObject that = (GameObject) o;
+
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

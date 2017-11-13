@@ -48,6 +48,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
         final Long id = (Long) webSocketSession.getAttributes().get(USER_SESSION_KEY);
         if (id == null || userService.getUserById(id) == null) {
             closeSession(webSocketSession, UNAUTHORIZED);
+            return;
         }
         sessions.registerUser(id, webSocketSession);
     }
@@ -90,7 +91,9 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         final Long userId = (Long) webSocketSession.getAttributes().get(USER_SESSION_KEY);
-        sessions.removeUser(userId);
+        if (userId != null) {
+            sessions.removeUser(userId);
+        }
     }
 
     @Override

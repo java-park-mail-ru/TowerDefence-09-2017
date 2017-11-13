@@ -31,6 +31,9 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Score> scores;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private GameProfile profile;
+
     public User() {
         this.nickname = "";
         this.password = "";
@@ -106,5 +109,13 @@ public class User {
 
     public void setRegDate(OffsetDateTime regDate) {
         this.regDate = regDate;
+    }
+
+    public GameProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(GameProfile profile) {
+        this.profile = profile;
     }
 }
