@@ -20,7 +20,6 @@ public class GameMap implements Snapshotable<GameMap> {
     public GameMap(GameMapResource resource) {
         this.width = resource.width;
         this.height = resource.height;
-        System.out.println(resource.titles);
         this.gameMap = resource.titles
                 .stream()
                 .collect(Collectors.toMap(Title::getTitleCoord, Function.identity()));
@@ -29,7 +28,6 @@ public class GameMap implements Snapshotable<GameMap> {
     public void setPathTitles(List<PathPoint> path) {
         for (PathPoint point : path) {
             Title title = point.getTitle();
-            System.out.println(title);
             gameMap.compute(title.getTitleCoord(), (coord, current) -> {
                 current.setTitleType(title.getTitleType());
                 return current;
