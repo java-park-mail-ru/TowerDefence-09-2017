@@ -73,6 +73,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
                 }
             }
         }
+        ready = false;
         return shots;
     }
 

@@ -7,11 +7,13 @@ import com.td.domain.User;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
 @Service
+@Transactional
 public class ScoresDao implements IScoreDao {
 
     private final EntityManager em;
