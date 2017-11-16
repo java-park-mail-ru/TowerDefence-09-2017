@@ -1,9 +1,11 @@
-package com.td.game.gameObjects;
+package com.td.game.gameobjects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.td.game.domain.Area;
 import com.td.game.domain.Point;
-import com.td.game.resourceSystem.Resource;
+import com.td.game.domain.ShotEvent;
+import com.td.game.resource.Resource;
 import com.td.game.snapshots.Snapshot;
 import com.td.game.snapshots.Snapshotable;
 
@@ -11,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tower extends GameObject implements Snapshotable<Tower> {
+    public int getDamage() {
+        return damage;
+    }
+
     private int damage;
     private boolean ready;
     private long period;
@@ -29,7 +35,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         this.msSinceLastShot = 0;
     }
 
-    void reload(long delta) {
+    public void reload(long delta) {
         if (isReady()) {
             return;
         }
@@ -40,8 +46,8 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         }
     }
 
-    public void setTitlePosition(long x, long y) {
-        this.titlePosition = new Point<>(x, y);
+    public void setTitlePosition(long xc, long yc) {
+        this.titlePosition = new Point<>(xc, yc);
     }
 
     public boolean isReady() {
@@ -73,6 +79,14 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
 
     public TowerSnapshot getSnapshot() {
         return new TowerSnapshot(this);
+    }
+
+    public Area getRangeArea() {
+        Long topx = Math.max(0, titlePosition.getXcoord() - range) - 1;
+        Long topy = Math.max(0, titlePosition.getYcoord() - range) - 1;
+        Long bottomx = titlePosition.getXcoord() + range + 1;
+        Long bottomy = titlePosition.getYcoord() + range + 1;
+        return new Area(topx, topy, bottomx, bottomy, this);
     }
 
     public class TowerSnapshot implements Snapshot<Tower> {
@@ -111,30 +125,21 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         }
     }
 
-    public class TowerResource extends Resource {
+    public static class TowerResource extends Resource {
         private int damage;
         private long period;
         private int range;
         private int cost;
 
         @JsonCreator
-        public TowerResource(int damage, long period, int range, int cost) {
+        public TowerResource(@JsonProperty("damage") int damage,
+                             @JsonProperty("period") long period,
+                             @JsonProperty("range") int range,
+                             @JsonProperty("cost") int cost) {
             this.damage = damage;
             this.period = period;
             this.range = range;
             this.cost = cost;
-        }
-
-        public int getDamage() {
-            return damage;
-        }
-
-        public long getPeriod() {
-            return period;
-        }
-
-        public int getRange() {
-            return range;
         }
 
         public int getCost() {

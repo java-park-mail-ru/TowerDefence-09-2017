@@ -62,6 +62,7 @@ public class AppConfig {
 
         source.registerCorsConfiguration("/auth/*", config);
 
+        source.registerCorsConfiguration("/user", config);
         source.registerCorsConfiguration("/user/*", config);
         return new CorsFilter(source);
     }

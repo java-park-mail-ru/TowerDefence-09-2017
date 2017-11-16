@@ -1,4 +1,4 @@
-package com.td.game.gameObjects;
+package com.td.game.gameobjects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
@@ -23,11 +23,15 @@ public abstract class GameObject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
 
-        GameObject that = (GameObject) o;
+        GameObject that = (GameObject) obj;
 
         return id.equals(that.id);
     }

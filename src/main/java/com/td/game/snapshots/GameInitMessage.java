@@ -3,7 +3,7 @@ package com.td.game.snapshots;
 import com.td.game.domain.GameMap;
 import com.td.game.domain.Player;
 import com.td.game.domain.Wave;
-import com.td.game.gameObjects.Tower;
+import com.td.game.gameobjects.Tower;
 import com.td.websocket.Message;
 
 import java.util.List;

@@ -19,6 +19,12 @@ public class Score {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 
+    public Score(int score, User owner) {
+        this.id = 0L;
+        this.score = score;
+        this.owner = owner;
+        this.scoreDate = OffsetDateTime.now();
+    }
 
     public Long getId() {
         return id;

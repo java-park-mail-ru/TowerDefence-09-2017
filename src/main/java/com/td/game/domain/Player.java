@@ -4,26 +4,26 @@ import com.td.game.snapshots.Snapshot;
 import com.td.game.snapshots.Snapshotable;
 
 public class Player implements Snapshotable<Player> {
-    private Long id;
+    private final Long id;
     private long money;
-    private long scores;
-    private String gameClass;
+    private int scores;
+    private String playerClass;
     private int level;
+    private static final int START_MONEY = 100;
 
-
-    Player(Long id) {
+    public Player(Long id) {
         this.id = id;
-        this.money = 100;
+        this.money = START_MONEY;
         this.scores = 0;
+        this.level = 0;
+        this.playerClass = "";
+
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public long getMoney() {
         return money;
@@ -33,11 +33,11 @@ public class Player implements Snapshotable<Player> {
         this.money = money;
     }
 
-    public long getScores() {
+    public int getScores() {
         return scores;
     }
 
-    public void setScores(long scores) {
+    public void setScores(int scores) {
         this.scores = scores;
     }
 
@@ -48,12 +48,14 @@ public class Player implements Snapshotable<Player> {
     public class PlayerSnapshot implements Snapshot<Player> {
         private Long id;
         private long money;
-        private long scores;
+        private int scores;
+        private String playerClass;
 
         PlayerSnapshot(Player player) {
             this.id = player.id;
             this.money = player.money;
             this.scores = player.scores;
+            this.playerClass = player.playerClass;
         }
 
         public Long getId() {
@@ -64,10 +66,13 @@ public class Player implements Snapshotable<Player> {
             return money;
         }
 
-        public long getScores() {
+        public int getScores() {
             return scores;
         }
 
+        public String getPlayerClass() {
+            return playerClass;
+        }
     }
 
 }

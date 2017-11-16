@@ -17,7 +17,7 @@ import static com.td.Constants.USER_SESSION_KEY;
 
 
 public class GameSocketHandler extends TextWebSocketHandler {
-    private static final Logger log = LoggerFactory.getLogger(GameSocketHandler.class);
+    private final Logger log = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus UNAUTHORIZED = new CloseStatus(4001, "Unauthorized");
 
     @NotNull
@@ -27,7 +27,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     private final MessageHandlersContainer handlers;
 
     @NotNull
-    private final TransportService sessions;
+    private final TransportService transport;
 
     @NotNull
     private final ObjectMapper mapper;
@@ -35,11 +35,11 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     public GameSocketHandler(@NotNull UserDao userService,
                              @NotNull MessageHandlersContainer handlers,
-                             @NotNull TransportService sessions,
+                             @NotNull TransportService transport,
                              @NotNull ObjectMapper mapper) {
         this.userService = userService;
         this.handlers = handlers;
-        this.sessions = sessions;
+        this.transport = transport;
         this.mapper = mapper;
     }
 
@@ -50,7 +50,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
             closeSession(webSocketSession, UNAUTHORIZED);
             return;
         }
-        sessions.registerUser(id, webSocketSession);
+        transport.registerUser(id, webSocketSession);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         final Long id = (Long) webSocketSession.getAttributes().get(USER_SESSION_KEY);
-        final User user;
-        if (id == null || (user = userService.getUserById(id)) == null) {
+        final User user = userService.getUserById(id);
+        if (id == null || user == null) {
             closeSession(webSocketSession, UNAUTHORIZED);
             return;
         }
@@ -92,7 +92,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         final Long userId = (Long) webSocketSession.getAttributes().get(USER_SESSION_KEY);
         if (userId != null) {
-            sessions.removeUser(userId);
+            transport.removeUser(userId);
         }
     }
 

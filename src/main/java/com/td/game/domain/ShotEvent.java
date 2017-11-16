@@ -1,5 +1,7 @@
-package com.td.game.gameObjects;
+package com.td.game.domain;
 
+import com.td.game.gameobjects.Monster;
+import com.td.game.gameobjects.Tower;
 import com.td.game.snapshots.Snapshot;
 import com.td.game.snapshots.Snapshotable;
 
@@ -8,7 +10,7 @@ public class ShotEvent implements Snapshotable<ShotEvent> {
     private final Long towerId;
     private final Long offset;
 
-    ShotEvent(Monster monster, Tower tower, Long offset) {
+    public ShotEvent(Monster monster, Tower tower, Long offset) {
         this.monsterId = monster.getId();
         this.towerId = tower.getId();
         this.offset = offset;
@@ -27,7 +29,7 @@ public class ShotEvent implements Snapshotable<ShotEvent> {
     }
 
     @Override
-    public Snapshot<ShotEvent> getSnapshot() {
+    public ShotEventSnapshot getSnapshot() {
         return new ShotEventSnapshot(this);
     }
 

@@ -1,6 +1,7 @@
 package com.td.game.domain;
 
-import com.td.game.gameObjects.Monster;
+import com.td.game.gameobjects.Monster;
+import com.td.game.gameobjects.Path;
 import com.td.game.snapshots.Snapshot;
 import com.td.game.snapshots.Snapshotable;
 
@@ -9,12 +10,14 @@ import java.util.stream.Collectors;
 
 public class Wave implements Snapshotable<Wave> {
     private Queue<Monster> pending;
-    private Set<Monster> running;
-    private List<Monster> passed;
+    private Set<Monster> running = new HashSet<>();
+    private List<Monster> passed = new ArrayList<>();
 
     private WaveStatus status;
     private long localTimeBuffer;
     private long monsterEnterDelay;
+
+    private final Map<Path, List<Monster>> pathBindings;
 
     public Queue<Monster> getPending() {
         return pending;
@@ -33,20 +36,35 @@ public class Wave implements Snapshotable<Wave> {
         return new WaveSnapshot(this);
     }
 
-    enum WaveStatus {
+    public Map<Path, List<Monster>> getPathBindings() {
+        return pathBindings;
+    }
+
+    public WaveStatus getStatus() {
+        return status;
+    }
+
+    public long getLocalTimeBuffer() {
+        return localTimeBuffer;
+    }
+
+    public long getMonsterEnterDelay() {
+        return monsterEnterDelay;
+    }
+
+    public enum WaveStatus {
         PENDING,
         STARTED,
         RUNNING,
         FINISHED
     }
 
-    public Wave(Queue<Monster> monsters, long startDealy, long monsterEnterDelay) {
-        this.pending = monsters;
+    public Wave(List<Monster> monsters, Map<Path, List<Monster>> pathBindings, long startDealy, long monsterEnterDelay) {
+        this.pending = new ArrayDeque<>(monsters);
         this.monsterEnterDelay = monsterEnterDelay;
-        this.running = new HashSet<>();
-        this.passed = new ArrayList<>();
         this.status = WaveStatus.PENDING;
         this.localTimeBuffer = startDealy;
+        this.pathBindings = pathBindings;
     }
 
     public void updatePendingTime(long ms) {
@@ -84,16 +102,18 @@ public class Wave implements Snapshotable<Wave> {
     }
 
     public boolean checkFinishCondition() {
-        if (status != WaveStatus.RUNNING) {
+        if (status != WaveStatus.RUNNING && status != WaveStatus.FINISHED) {
             return false;
         }
         if (pending.isEmpty() && running.isEmpty()) {
             this.status = WaveStatus.FINISHED;
+
+            return true;
         }
-        return true;
+        return false;
     }
 
-    public class WaveSnapshot implements Snapshot<Wave> {
+    public static class WaveSnapshot implements Snapshot<Wave> {
         private List<Monster.MonsterSnapshot> pending;
         private List<Monster.MonsterSnapshot> running;
         private List<Monster.MonsterSnapshot> passed;
@@ -125,5 +145,24 @@ public class Wave implements Snapshotable<Wave> {
             }
         }
 
+        public List<Monster.MonsterSnapshot> getPending() {
+            return pending;
+        }
+
+        public List<Monster.MonsterSnapshot> getRunning() {
+            return running;
+        }
+
+        public List<Monster.MonsterSnapshot> getPassed() {
+            return passed;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public long getMsToStart() {
+            return msToStart;
+        }
     }
 }

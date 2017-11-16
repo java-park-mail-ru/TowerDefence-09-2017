@@ -1,0 +1,68 @@
+{
+  "class": "Path$PathResource",
+  "points":[
+{"x":0,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index":0},
+{"x":1,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index":1},
+{"x":2,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index":2},
+{"x":3,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index": 3},
+{"x":4,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index":4},
+{"x":5,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index":5},
+
+{"x":6,"y": 1,"titleType": 1,"vx": 0,"vy": 1,"index":6},
+{"x":6,"y": 2,"titleType": 1,"vx": 0,"vy": 1,"index":7},
+{"x":6,"y": 3,"titleType": 1,"vx": 0,"vy": 1,"index":8},
+{"x":6,"y": 4,"titleType": 1,"vx": 0,"vy": 1,"index": 9},
+
+{"x":6,"y": 5,"titleType": 1,"vx": -1,"vy": 0,"index":10},
+{"x":5,"y": 5,"titleType": 1,"vx": -1,"vy": 0,"index": 11},
+{"x":4,"y": 5,"titleType": 1,"vx": -1,"vy": 0,"index":12},
+{"x":3,"y": 5,"titleType": 1,"vx": -1,"vy": 0, "index":13},
+
+
+{"x":2,"y": 5,"titleType": 1,"vx": 0,"vy": 1,"index":14},
+{"x":2,"y": 6,"titleType": 1,"vx": 0,"vy": 1,"index":15},
+{"x":2,"y": 7,"titleType": 1,"vx": 0,"vy": 1, "index":16},
+
+{"x":2,"y": 8,"titleType": 1,"vx": 1, "vy":0,"index":17},
+{"x":3,"y": 8,"titleType": 1,"vx": 1,"vy": 0, "index":18},
+{"x":4,"y": 8,"titleType": 1,"vx": 1,"vy": 0,"index":19},
+{"x":5,"y": 8,"titleType": 1,"vx": 1,"vy": 0, "index":20},
+{"x":6,"y": 8,"titleType": 1,"vx": 1,"vy": 0,"index": 21},
+{"x":7,"y": 8,"titleType": 1,"vx": 1,"vy": 0,"index": 22},
+{"x":8,"y": 8,"titleType": 1,"vx": 1,"vy": 0,"index": 23},
+
+{"x":9,"y": 8,"titleType": 1,"vx": 0,"vy": -1,"index":24},
+{"x":9,"y": 7,"titleType": 1,"vx": 0,"vy": -1,"index": 25},
+{"x":9,"y": 6,"titleType": 1,"vx": 0,"vy": -1,"index":26},
+{"x":9,"y": 5,"titleType": 1,"vx": 0,"vy": -1,"index": 27},
+{"x":9,"y": 4,"titleType": 1,"vx": 0,"vy": -1,"index": 28},
+{"x":9,"y": 3,"titleType": 1,"vx": 0,"vy": -1,"index": 29},
+{"x":9,"y": 2,"titleType": 1,"vx": 0,"vy": -1,"index": 30},
+
+{"x":9,"y": 8,"titleType": 1,"vx": 1,"vy": 0,"index":31},
+{"x":10,"y": 7,"titleType": 1,"vx": 1,"vy":0,"index":32},
+{"x":11,"y": 6,"titleType": 1,"vx": 1,"vy": 0,"index":33},
+{"x":12,"y": 5,"titleType": 1,"vx": 1,"vy": 0,"index":34},
+{"x":13,"y": 4,"titleType": 1,"vx": 1,"vy": 0,"index":35},
+{"x":14,"y": 3,"titleType": 1,"vx": 1,"vy": 0,"index":36},
+{"x":15,"y": 2,"titleType": 1,"vx": 1,"vy": 0,"index":37},
+{"x":16,"y": 1,"titleType": 1,"vx": 1,"vy": 0,"index":38},
+
+{"x":17,"y": 1,"titleType": 1,"vx": 0, "vy":1,"index":39 },
+{"x":17,"y": 2,"titleType": 1,"vx": 0,"vy": 1,"index":40 },
+{"x":17,"y": 3,"titleType": 1,"vx": 0,"vy": 1,"index": 41},
+{"x":17,"y": 4,"titleType": 1,"vx": 0,"vy": 1,"index": 42},
+{"x":17,"y": 5,"titleType": 1,"vx": 0,"vy": 1,"index": 43},
+{"x":17,"y": 6,"titleType": 1,"vx": 0,"vy": 1,"index": 44},
+{"x":17,"y": 7,"titleType": 1,"vx": 0,"vy": 1,"index": 45},
+{"x":17,"y": 8,"titleType": 1,"vx": 0,"vy": 1,"index": 46},
+{"x":17,"y": 9,"titleType": 1,"vx": 0,"vy": 1,"index": 47},
+{"x":17,"y": 10,"titleType": 1,"vx": 0,"vy": 1,"index": 48},
+{"x":17,"y": 11,"titleType": 1,"vx": 0,"vy": 1,"index": 49},
+
+{"x":17,"y": 12,"titleType": 1,"vx": 1,"vy":0,"index":50},
+{"x":17,"y": 12,"titleType": 1,"vx": 1,"vy": 0,"index":51},
+{"x":17,"y": 12,"titleType": 1,"vx": 1,"vy":0,"index":52}
+
+  ]
+}

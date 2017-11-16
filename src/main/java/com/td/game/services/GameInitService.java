@@ -6,28 +6,30 @@ import com.td.game.domain.GameMap;
 import com.td.game.domain.Player;
 import com.td.game.domain.PlayerClass;
 import com.td.game.domain.Wave;
-import com.td.game.gameObjects.Tower;
-import com.td.game.resourceSystem.ResourceFactory;
+import com.td.game.gameobjects.Tower;
+import com.td.game.resource.ResourceFactory;
 import com.td.game.snapshots.GameInitMessage;
 import com.td.websocket.TransportService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class GameInitService {
 
     @NotNull
     private final TransportService transport;
-
     @NotNull
-    private final UserDao userDao;
+    private final ResourceFactory resourceFactory;
 
-
-    public GameInitService(@NotNull TransportService transportService, @NotNull UserDao userDao, @NotNull ResourceFactory resourceFactory) {
+    public GameInitService(@NotNull TransportService transportService,
+                           @NotNull UserDao userDao,
+                           @NotNull ResourceFactory resourceFactory) {
         this.transport = transportService;
-        this.userDao = userDao;
+        this.resourceFactory = resourceFactory;
     }
 
     public void initGameInSession(@NotNull GameSession session) {
@@ -37,17 +39,17 @@ public class GameInitService {
                 .collect(Collectors.toList());
 
         for (Player player : session.getPlayers()) {
-            GameInitMessage message = createIntiMessage(session, player, playerSnapshots);
+            GameInitMessage message = createInitMessage(session, player, playerSnapshots);
             try {
                 transport.sendMessageToUser(player.getId(), message);
             } catch (IOException e) {
-                //TODO: terminate sessions
-                e.printStackTrace();
+                throw new SnapshotSendingException("unable to send initial message", e);
             }
         }
     }
 
-    private GameInitMessage createIntiMessage(@NotNull GameSession session,
+    @NotNull
+    private GameInitMessage createInitMessage(@NotNull GameSession session,
                                               Player player,
                                               List<Player.PlayerSnapshot> playerSnapshots) {
         Wave.WaveSnapshot current = session.getCurrentWave().getSnapshot();
@@ -55,12 +57,10 @@ public class GameInitService {
         PlayerClass playerClass = session.getPlayersClasses().get(player.getId());
         List<Tower.TowerSnapshot> availableTowers = playerClass
                 .getAvailableTowers().stream()
+                .map(towerClass -> new Tower(resourceFactory.loadResource(towerClass + ".json", Tower.TowerResource.class)))
                 .map(Tower::getSnapshot)
                 .collect(Collectors.toList());
         return new GameInitMessage(map, playerSnapshots, availableTowers, current);
 
-
     }
-
-
 }

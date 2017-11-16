@@ -41,6 +41,7 @@ public class TransportService {
         if (session != null && session.isOpen()) {
             try {
                 session.close(status);
+                flushSession(id);
             } catch (IOException e) {
                 log.error("Error on session closing: {}", e);
             }
@@ -51,6 +52,7 @@ public class TransportService {
         final WebSocketSession session = sessions.get(id);
         if (session != null && session.isOpen()) {
             session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+            return;
         }
         throw new IOException("Fail on message send: session for " + id + " doesn't exists");
     }

@@ -1,4 +1,4 @@
-package com.td.game.resourceSystem;
+package com.td.game.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
@@ -9,14 +9,14 @@ import java.io.IOException;
 
 @Service
 public class ResourceFactory {
-    ObjectMapper objectMapper;
+   private final ObjectMapper objectMapper;
 
     @Autowired
     public ResourceFactory(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public Resource getResource(String path) {
+    public Resource getRawResource(String path) {
         return loadResource(path, Resource.class);
     }
 

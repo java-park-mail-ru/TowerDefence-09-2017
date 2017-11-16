@@ -2,6 +2,7 @@ package com.td.daos;
 
 import com.td.daos.exceptions.UserDaoInvalidData;
 import com.td.daos.exceptions.UserDaoUpdateFail;
+import com.td.domain.GameProfile;
 import com.td.domain.User;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,6 +49,7 @@ public class UserDaoTest {
             assertTrue(user.checkPassword(uuid));
             assertTrue(dao.checkUserById(user.getId()));
             assertTrue(dao.checkUserByEmail(user.getEmail()));
+            assertEquals(user.getProfile().getGameClass(), "Adventurer");
             assertNotNull(user.getId());
         });
     }
@@ -60,6 +62,7 @@ public class UserDaoTest {
             assertEquals(byEmailUser, byNicknameUser);
             assertEquals(byEmailUser.getNickname(), uuid);
             assertEquals(byEmailUser.getEmail(), uuid + EMAIL_SUFFIX);
+            assertNotNull(byEmailUser.getProfile());
         });
     }
 
@@ -164,6 +167,7 @@ public class UserDaoTest {
     public void testUserRemoveByEmail() {
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickname(uuid);
+
             dao.removeUserByEmail(user.getEmail());
             assertFalse(dao.checkUserById(user.getId()));
 

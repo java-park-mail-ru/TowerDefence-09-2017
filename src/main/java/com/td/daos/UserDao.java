@@ -4,6 +4,7 @@ import com.td.daos.exceptions.UserDaoAlreadyExists;
 import com.td.daos.exceptions.UserDaoInvalidData;
 import com.td.daos.exceptions.UserDaoUpdateFail;
 import com.td.daos.inerfaces.IUserDao;
+import com.td.domain.GameProfile;
 import com.td.domain.User;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ public class UserDao implements IUserDao {
             User user = em.createQuery("SELECT u FROM User u WHERE u.nickname = :nickname", User.class)
                     .setParameter("nickname", nickname)
                     .getSingleResult();
-          return user;
+            return user;
         } catch (NoResultException ex) {
             return null;
         }
@@ -93,6 +94,7 @@ public class UserDao implements IUserDao {
             user.setNickname(nickname);
             user.setEmail(email);
             user.setPassword(password);
+            user.setProfile(new GameProfile("Adventurer"));
             return storeUser(user);
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {
@@ -206,10 +208,14 @@ public class UserDao implements IUserDao {
 
     @Override
     public int removeUserByParams(Long id, String email, String nickname) {
-        return em.createQuery("DELETE FROM User u WHERE u.id = :id or u.email = :email or u.nickname = :nickname")
+        List<User> users = em.createQuery("SELECT u FROM User u WHERE u.id = :id or u.email = :email or u.nickname = :nickname", User.class)
                 .setParameter("id", id)
                 .setParameter("email", email)
                 .setParameter("nickname", nickname)
-                .executeUpdate();
+                .getResultList();
+        for (User user : users) {
+            em.remove(user);
+        }
+        return users.size();
     }
 }

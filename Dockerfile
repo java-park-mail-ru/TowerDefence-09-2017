@@ -1,6 +1,6 @@
 FROM ubuntu:17.04
 
-RUN apt update  && apt install -y postgresql-9.6
+RUN apt update  && apt install -ycoord postgresql-9.6
 
 USER postgres
 

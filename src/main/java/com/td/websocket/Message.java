@@ -13,7 +13,7 @@ import com.td.game.snapshots.*;
         @JsonSubTypes.Type(value = JoinGameMessage.class, name = "join"),
         @JsonSubTypes.Type(value = GameFinishMessage.class, name = "finish"),
         @JsonSubTypes.Type(value = ServerSnap.class, name = "state"),
-        @JsonSubTypes.Type(value = ClientSnap.class),
+        @JsonSubTypes.Type(value = TowerOrderMessage.class, name = "towerOrder"),
 })
 public abstract class Message {
 }

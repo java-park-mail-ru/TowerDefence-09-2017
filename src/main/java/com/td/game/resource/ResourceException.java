@@ -1,4 +1,4 @@
-package com.td.game.resourceSystem;
+package com.td.game.resource;
 
 public class ResourceException extends RuntimeException {
 

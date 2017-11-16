@@ -1,0 +1,8 @@
+{
+  "class": "Adventurer",
+  "availableTowers": [
+    "BlueTower",
+    "OrangeTower",
+    "RedTower"
+  ]
+}

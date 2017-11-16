@@ -1,58 +1,69 @@
 package com.td.game.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Point<T extends Number> {
-    private T x;
-    private T y;
+    private T xcoord;
+    private T ycoord;
 
-    public T getX() {
-        return x;
+    @JsonProperty("x")
+    public T getXcoord() {
+        return xcoord;
     }
 
-    public void setX(T x) {
-        this.x = x;
+    public void setXcoord(T xcoord) {
+        this.xcoord = xcoord;
     }
 
-    public T getY() {
-        return y;
+    @JsonProperty("y")
+    public T getYcoord() {
+        return ycoord;
     }
 
-    public void setY(T y) {
-        this.y = y;
+    public void setYcoord(T ycoord) {
+        this.ycoord = ycoord;
     }
 
-    public void set(T xCoord, T yCoord){
-        this.x = xCoord;
-        this.y = yCoord;
+    public void set(T xc, T yc) {
+        xcoord = xc;
+        ycoord = yc;
     }
 
-    public Point(T x, T y){
-        this.x = x;
-        this.y = y;
+    public Point(T xcoord, T ycoord) {
+        this.xcoord = xcoord;
+        this.ycoord = ycoord;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
 
-        Point<?> point = (Point<?>) o;
+        Point<?> point = (Point<?>) obj;
 
-        if (x != null ? !x.equals(point.x) : point.x != null) return false;
-        return y != null ? y.equals(point.y) : point.y == null;
+        if (xcoord != null ? !xcoord.equals(point.xcoord) : point.xcoord != null) {
+            return false;
+        }
+        return ycoord != null ? ycoord.equals(point.ycoord) : point.ycoord == null;
     }
 
     @Override
     public int hashCode() {
-        int result = x != null ? x.hashCode() : 0;
-        result = 31 * result + (y != null ? y.hashCode() : 0);
+        int result = xcoord != null ? xcoord.hashCode() : 0;
+        final int magic = 31;
+        result = magic * result + (ycoord != null ? ycoord.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "Point{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return "Point{"
+                + "xcoord=" + xcoord
+                + ", ycoord=" + ycoord
+                + '}';
     }
 }
