@@ -26,6 +26,13 @@ public class Score {
         this.scoreDate = OffsetDateTime.now();
     }
 
+    public Score() {
+        this.id = 0L;
+        this.score = 0;
+        this.owner = null;
+        this.scoreDate = OffsetDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
