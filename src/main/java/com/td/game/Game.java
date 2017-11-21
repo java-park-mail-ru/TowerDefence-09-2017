@@ -94,7 +94,7 @@ public class Game {
         matched = matched.stream().distinct().collect(Collectors.toList());
 
         if (matched.size() == GAME_LOBBY_SIZE) {
-            matched.forEach(user -> log.trace("User {} in game",user.getId()));
+            matched.forEach(user -> log.trace("User {} in game", user.getId()));
             gameSessionService.startGame(matched);
         } else {
             matched.forEach(user -> waiters.add(user.getId()));

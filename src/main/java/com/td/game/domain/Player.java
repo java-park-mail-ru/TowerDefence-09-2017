@@ -41,16 +41,16 @@ public class Player implements Snapshotable<Player> {
         this.scores = scores;
     }
 
-    public void updateScores(int scores) {
-        this.scores += scores;
+    public void updateScores(int scoresDelta) {
+        this.scores += scoresDelta;
     }
 
     public PlayerSnapshot getSnapshot() {
         return new PlayerSnapshot(this);
     }
 
-    public void updateMoney(int money) {
-        this.money += money;
+    public void updateMoney(int moneyDelta) {
+        this.money += moneyDelta;
     }
 
     public class PlayerSnapshot implements Snapshot<Player> {

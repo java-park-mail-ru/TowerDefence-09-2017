@@ -1,6 +1,5 @@
 package com.td.game;
 
-import com.td.game.services.TickerService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
