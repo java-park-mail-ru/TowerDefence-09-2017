@@ -35,16 +35,18 @@ public class MonsterWaveProcessorService {
         });
         waveStatusHandlers.put(Wave.WaveStatus.RUNNING, this::moveMonsters);
         waveStatusHandlers.put(Wave.WaveStatus.FINISHED, (wave, delta) -> {
+
         });
     }
 
     public void processWave(@NotNull GameSession session, long delta) {
         Wave wave = session.getCurrentWave();
-        if (wave.checkFinishCondition()) {
+        if (wave.getStatus() == Wave.WaveStatus.FINISHED) {
             session.setWaveNumber(session.getWaveNumber() + 1);
             session.setCurrentWave(waveGenerator.generateWave(session.getWaveNumber(), session.getPaths()));
             return;
         }
+        wave.tryToFinishWave();
         waveStatusHandlers.get(wave.getStatus()).accept(wave, delta);
 
     }
@@ -61,12 +63,7 @@ public class MonsterWaveProcessorService {
 
     public void processCleanup(@NotNull GameSession session) {
         Wave wave = session.getCurrentWave();
-        Set<Monster> monsters = wave.getRunning();
-        for (Monster monster : monsters) {
-            if (monster.getHp() <= 0) {
-                wave.passMonster(monster);
-            }
-        }
+        wave.passDeadMonsters();
     }
 
     public void processPassedMonsters(@NotNull GameSession session) {
@@ -76,9 +73,10 @@ public class MonsterWaveProcessorService {
             return;
         }
         Map<Path, List<Monster>> pathBindings = wave.getPathBindings();
-
+        Set<Monster> running = wave.getRunning();
         pathBindings.forEach((path, monsters) ->
                 monsters.stream().filter(monster -> path.getLastPoint().equals(monster.getCoord()))
+                        .filter(running::contains)
                         .forEach(monster -> {
                             session.setHp(session.getHp() - monster.getWeight());
                             wave.passMonster(monster);

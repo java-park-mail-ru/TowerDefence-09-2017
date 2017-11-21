@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Adventurer extends PlayerClass {
     @JsonCreator
-    Adventurer(@JsonProperty("availableTowers") List<String> availableTowers) {
+    Adventurer(@JsonProperty("availableTowers") List<Integer> availableTowers) {
         super(availableTowers);
     }
 

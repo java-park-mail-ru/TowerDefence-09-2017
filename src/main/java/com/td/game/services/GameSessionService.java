@@ -25,7 +25,6 @@ public class GameSessionService {
     @NotNull
     private final Map<Long, GameSession> usersSessions = new HashMap<>();
 
-
     @NotNull
     private final Set<GameSession> sessions = new HashSet<>();
 
@@ -76,7 +75,7 @@ public class GameSessionService {
         map.setPathTitles(path.getPathPoints());
         Wave wave = waveService.generateWave(0, paths);
         List<Player> players = users.stream()
-                .map(user -> new Player(user.getId()))
+                .map(user -> new Player(user.getId(), user.getProfile().getGameClass()))
                 .collect(Collectors.toList());
 
         Map<String, PlayerClass> availableClasses = users.stream()

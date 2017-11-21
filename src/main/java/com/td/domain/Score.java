@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 @Table(name = "scores")
 public class Score {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int score;
@@ -19,10 +19,10 @@ public class Score {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 
-    public Score(int score, User owner) {
+    public Score(int score) {
         this.id = 0L;
         this.score = score;
-        this.owner = owner;
+        this.owner = null;
         this.scoreDate = OffsetDateTime.now();
     }
 

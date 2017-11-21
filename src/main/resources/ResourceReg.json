@@ -1,0 +1,17 @@
+{
+  "class": "ResourceReg",
+  "reg": [
+    {
+      "typeid": 101,
+      "resource": "BlueTower.json"
+    },
+    {
+      "typeid": 102,
+      "resource": "RedTower.json"
+    },
+    {
+      "typeid": 103,
+      "resource": "OrangeTower.json"
+    }
+  ]
+}

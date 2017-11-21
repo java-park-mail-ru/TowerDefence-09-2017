@@ -2,11 +2,7 @@ package com.td.game.services;
 
 import com.td.daos.UserDao;
 import com.td.game.GameSession;
-import com.td.game.domain.GameMap;
-import com.td.game.domain.Player;
-import com.td.game.domain.PlayerClass;
-import com.td.game.domain.Wave;
-import com.td.game.gameobjects.Tower;
+import com.td.game.domain.*;
 import com.td.game.resource.ResourceFactory;
 import com.td.game.snapshots.GameInitMessage;
 import com.td.websocket.TransportService;
@@ -25,11 +21,15 @@ public class GameInitService {
     @NotNull
     private final ResourceFactory resourceFactory;
 
+    @NotNull
+    private final TextureAtlas textureAtlas;
+
     public GameInitService(@NotNull TransportService transportService,
                            @NotNull UserDao userDao,
                            @NotNull ResourceFactory resourceFactory) {
         this.transport = transportService;
         this.resourceFactory = resourceFactory;
+        textureAtlas = resourceFactory.loadResource("TextureAtlas.json", TextureAtlas.class);
     }
 
     public void initGameInSession(@NotNull GameSession session) {
@@ -55,12 +55,15 @@ public class GameInitService {
         Wave.WaveSnapshot current = session.getCurrentWave().getSnapshot();
         GameMap.GameMapSnapshot map = session.getGameMap().getSnapshot();
         PlayerClass playerClass = session.getPlayersClasses().get(player.getId());
-        List<Tower.TowerSnapshot> availableTowers = playerClass
-                .getAvailableTowers().stream()
-                .map(towerClass -> new Tower(resourceFactory.loadResource(towerClass + ".json", Tower.TowerResource.class)))
-                .map(Tower::getSnapshot)
-                .collect(Collectors.toList());
-        return new GameInitMessage(map, playerSnapshots, availableTowers, current);
+        List<Integer> availableTowers = playerClass.getAvailableTowers();
+        return new GameInitMessage(
+                player.getId(),
+                map,
+                playerSnapshots,
+                availableTowers,
+                current,
+                textureAtlas,
+                session.getHp());
 
     }
 }

@@ -5,16 +5,12 @@ import com.td.game.domain.GameMap;
 import com.td.game.domain.PlayerClass;
 import com.td.game.domain.Point;
 import com.td.game.gameobjects.Monster;
-import com.td.game.gameobjects.Tower;
 import com.td.game.resource.ResourceFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,11 +42,6 @@ public class ResourceSystemTest {
     public void testPlayerClassLoading() {
         PlayerClass pc = resourceFactory.loadResource("Adventurer.json", Adventurer.class);
         assertNotNull(pc);
-        List<Tower> towers = pc.getAvailableTowers().stream()
-                .map(res -> new Tower(resourceFactory.loadResource(res + ".json", Tower.TowerResource.class)))
-                .collect(Collectors.toList());
-        assertEquals(3, towers.size());
-        assertEquals(towers.get(2).getDamage(),50 );
-
+        assertEquals(3, pc.getAvailableTowers().size());
     }
 }

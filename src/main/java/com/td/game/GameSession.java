@@ -18,7 +18,7 @@ public class GameSession {
 
     private final GameMap gameMap;
     private final List<Tower> towers;
-    private final List<Area> areas = new ArrayList<>();
+    private final List<Area> areas;
     private Wave currentWave;
     private int waveNumber = 0;
     private int hp = BASE_HP;
@@ -40,6 +40,7 @@ public class GameSession {
         this.gameMap = gameMap;
         this.towers = new ArrayList<>();
         this.shots = new ArrayList<>();
+        this.areas = new ArrayList<>();
         this.currentWave = currentWave;
         this.paths = paths;
     }
@@ -130,5 +131,9 @@ public class GameSession {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+    public List<ShotEvent> getShotEvents() {
+        return shotEvents;
     }
 }

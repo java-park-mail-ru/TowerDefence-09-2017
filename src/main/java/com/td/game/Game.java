@@ -22,7 +22,8 @@ public class Game {
     @NotNull
     private final Logger log = LoggerFactory.getLogger(Game.class);
 
-    private static final int GAME_LOBBY_SIZE = 2;
+    //temoral hack for development
+    private static final int GAME_LOBBY_SIZE = 1;
 
     @NotNull
     private final GameSessionService gameSessionService;
@@ -91,7 +92,9 @@ public class Game {
             }
         }
         matched = matched.stream().distinct().collect(Collectors.toList());
+
         if (matched.size() == GAME_LOBBY_SIZE) {
+            matched.forEach(user -> log.trace("User {} in game",user.getId()));
             gameSessionService.startGame(matched);
         } else {
             matched.forEach(user -> waiters.add(user.getId()));
@@ -111,8 +114,9 @@ public class Game {
             if (order == null) {
                 break;
             }
-            towerManager.processOrder(gameSessionService
-                    .getSessionForUser(order.getPlayerId()), order);
+            log.trace("Order for player {} in process", order.getPlayerId());
+            GameSession session = gameSessionService.getSessionForUser(order.getPlayerId());
+            towerManager.processOrder(session, order);
         }
 
         for (GameSession session : sessions) {
@@ -124,7 +128,7 @@ public class Game {
 
             waveProcessor.processPassedMonsters(session);
             towerShootingService.reloadTowers(session, delta);
-            towerShootingService.processTowerShooting(session, delta);
+            towerShootingService.processTowerShooting(session);
             waveProcessor.processCleanup(session);
             waveProcessor.processWave(session, delta);
 
@@ -140,8 +144,8 @@ public class Game {
         finishedSessions.forEach(gameSessionService::finishGame);
     }
 
-    public void addTowerOrders(String orderedTower, long xcoord, long ycoord, Long id) {
-        towerOrders.offer(new TowerManager.TowerOrder(xcoord, ycoord, orderedTower, id));
+    public void addTowerOrders(Integer orderedTowerTypeId, long xcoord, long ycoord, Long id) {
+        towerOrders.offer(new TowerManager.TowerOrder(xcoord, ycoord, orderedTowerTypeId, id));
     }
 
 }

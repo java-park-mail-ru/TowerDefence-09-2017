@@ -10,6 +10,7 @@ import com.td.game.snapshots.Snapshotable;
 
 public class Monster extends GameObject implements Snapshotable<Monster> {
 
+    private final Integer typeid;
     private int hp;
     private double speed;
     private PathPoint coord;
@@ -21,11 +22,13 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
     private int vy;
 
     public Monster(MonsterResource resource) {
+        super();
         final double timeScale = 0.001;
         this.hp = resource.hp;
         this.speed = resource.speed * timeScale;
         this.weight = resource.weight;
         this.relativeCoord = new Point<>(0.0, 0.0);
+        this.typeid = resource.typeid;
     }
 
     public int getHp() {
@@ -51,14 +54,14 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
             } else {
                 newx -= 1;
             }
-            coord = next;
+            setCoord(next);
         } else if (vy != 0 && Math.abs(newy) >= 1) {
             if (newy <= -1) {
                 newy += 1;
             } else if (newy >= 1) {
                 newy -= 1;
             }
-            coord = next;
+            setCoord(next);
         }
         relativeCoord.set(newx, newy);
     }
@@ -89,9 +92,14 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
         return weight;
     }
 
+    public int getReward() {
+        return reward;
+    }
+
 
     public class MonsterSnapshot implements Snapshot<Monster> {
         private Long id;
+        private Integer typeid;
         private int hp;
         private double speed;
         private Point<Long> titleCoord;
@@ -124,6 +132,11 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
             this.speed = monster.speed * timeScale;
             this.titleCoord = monster.coord.getTitleCoord();
             this.relativeCoord = monster.relativeCoord;
+            this.typeid = monster.typeid;
+        }
+
+        public Integer getTypeid() {
+            return typeid;
         }
     }
 
@@ -132,16 +145,19 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
         private double speed;
         private int weight;
         private int reward;
+        private Integer typeid;
 
         @JsonCreator
         MonsterResource(@JsonProperty("hp") int hp,
                         @JsonProperty("speed") double speed,
                         @JsonProperty("weight") int weight,
-                        @JsonProperty("reward") int reward) {
+                        @JsonProperty("reward") int reward,
+                        @JsonProperty("typeid") int typeid) {
             this.hp = hp;
             this.speed = speed;
             this.weight = weight;
             this.reward = reward;
+            this.typeid = typeid;
         }
 
 

@@ -101,16 +101,27 @@ public class Wave implements Snapshotable<Wave> {
         passed.add(monster);
     }
 
-    public boolean checkFinishCondition() {
-        if (status != WaveStatus.RUNNING && status != WaveStatus.FINISHED) {
-            return false;
+    public void tryToFinishWave() {
+        if (status == WaveStatus.FINISHED) {
+            return;
+        }
+        if (status != WaveStatus.RUNNING) {
+            return;
         }
         if (pending.isEmpty() && running.isEmpty()) {
             this.status = WaveStatus.FINISHED;
-
-            return true;
         }
-        return false;
+    }
+
+    public void passDeadMonsters() {
+        Iterator<Monster> iter = running.iterator();
+        while (iter.hasNext()) {
+            Monster monster = iter.next();
+            if (monster.getHp() <= 0) {
+                iter.remove();
+                passed.add(monster);
+            }
+        }
     }
 
     public static class WaveSnapshot implements Snapshot<Wave> {

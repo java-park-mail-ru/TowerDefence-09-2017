@@ -24,13 +24,13 @@ public class TowerManager {
     public void processOrder(@NotNull GameSession session, @NotNull TowerOrder order) {
         Map<Long, PlayerClass> playersClasses = session.getPlayersClasses();
         PlayerClass playerClass = playersClasses.get(order.getPlayerId());
+
         if (playerClass
                 .getAvailableTowers()
                 .stream()
                 .anyMatch(towerClass -> towerClass.equals(order.getTowerClass()))) {
 
-            Tower.TowerResource resource = resourceFactory
-                    .loadResource(order.getTowerClass() + ".json", Tower.TowerResource.class);
+
             Player player = null;
             for (Player sessionPlayer : session.getPlayers()) {
                 if (sessionPlayer.getId().equals(order.playerId)) {
@@ -38,11 +38,16 @@ public class TowerManager {
                     break;
                 }
             }
+
+            Tower.TowerResource resource = resourceFactory
+                    .loadResource(order.getTowerClass(), Tower.TowerResource.class);
+
             GameMap map = session.getGameMap();
+
             if (player != null && player.getMoney() >= resource.getCost() && map.isTitleFree(order.xcoord, order.ycoord)) {
-                Tower tower = new Tower(resource);
+                Tower tower = new Tower(resource, player);
                 tower.setTitlePosition(order.xcoord, order.ycoord);
-                session.getGameMap().placeObject(order.xcoord, order.ycoord, tower);
+                map.placeObject(order.xcoord, order.ycoord, tower);
                 session.getTowers().add(tower);
                 session.addArea(tower.getRangeArea());
                 player.setMoney(player.getMoney() - resource.getCost());
@@ -55,10 +60,10 @@ public class TowerManager {
     public static class TowerOrder {
         private long xcoord;
         private long ycoord;
-        private String towerClass;
+        private Integer towerClass;
         private Long playerId;
 
-        public TowerOrder(long xcoord, long ycoord, String towerClass, Long playerId) {
+        public TowerOrder(long xcoord, long ycoord, Integer towerClass, Long playerId) {
             this.xcoord = xcoord;
             this.ycoord = ycoord;
             this.towerClass = towerClass;
@@ -69,7 +74,7 @@ public class TowerManager {
             return playerId;
         }
 
-        public String getTowerClass() {
+        public Integer getTowerClass() {
             return towerClass;
         }
 

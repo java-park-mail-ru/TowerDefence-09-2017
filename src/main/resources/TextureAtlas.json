@@ -1,0 +1,45 @@
+{
+  "class": "TextureAtlas",
+  "atlas": [
+    {
+      "type": 0,
+      "text": "",
+      "texture": "grass.png"
+    },
+    {
+      "type": 1,
+      "text": "",
+      "texture": "stone.png"
+    },
+    {
+      "type": 101,
+      "text": "Blue Tower",
+      "texture": "bluetower.png"
+    },
+    {
+      "type": 102,
+      "text": "Red Tower",
+      "texture": "redtower.png"
+    },
+    {
+      "type": 103,
+      "text": "Orange tower",
+      "texture": "otower.png"
+    },
+    {
+      "type": 1001,
+      "text": "Red monster",
+      "texture": "redMonster.png"
+    },
+    {
+      "type": 1002,
+      "text": "Blue monster",
+      "texture": "blueMonster.png"
+    },
+    {
+      "type": 1003,
+      "text": "Orange monster",
+      "texture": "orangeMonster.png"
+    }
+  ]
+}

@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
 @Transactional
 public class UserDaoTest {

@@ -4,6 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,10 +26,10 @@ public class User {
 
     private OffsetDateTime regDate;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Progress> progress;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Score> scores;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -40,6 +41,8 @@ public class User {
         this.email = "";
         this.id = 0L;
         this.regDate = OffsetDateTime.now();
+        this.scores = new ArrayList<>();
+        this.progress = new ArrayList<>();
     }
 
     private String hashPassword(String somePassword) {
@@ -138,5 +141,18 @@ public class User {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    public List<Score> getScores() {
+        return scores;
+    }
+
+    public List<Progress> getProgress() {
+        return progress;
+    }
+
+    public void addScores(Score score) {
+        scores.add(score);
+        score.setOwner(this);
     }
 }

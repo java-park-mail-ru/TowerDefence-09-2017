@@ -32,7 +32,6 @@ public class JoinGameHandler extends MessageHandler<JoinGameMessage> {
 
     @Override
     public void handle(JoinGameMessage message, Long id) {
-
         game.addUser(id);
     }
 }

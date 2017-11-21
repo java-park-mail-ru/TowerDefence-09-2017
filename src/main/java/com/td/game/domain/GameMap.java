@@ -68,8 +68,8 @@ public class GameMap implements Snapshotable<GameMap> {
         return true;
     }
 
-    public void placeObject(long xcoord, long ycoord, GameObject gameObject) {
-        placeObject(new Point<>(xcoord, ycoord), gameObject);
+    public boolean placeObject(long xcoord, long ycoord, GameObject gameObject) {
+        return placeObject(new Point<>(xcoord, ycoord), gameObject);
     }
 
 

@@ -12,14 +12,14 @@ import java.util.List;
         @JsonSubTypes.Type(Adventurer.class),
 })
 public abstract class PlayerClass extends Resource {
-    private List<String> availableTowers;
+    private List<Integer> availableTowers;
 
     @JsonCreator
-    PlayerClass(List<String> availableTowers) {
+    PlayerClass(List<Integer> availableTowers) {
         this.availableTowers = availableTowers;
     }
 
-    public List<String> getAvailableTowers() {
+    public List<Integer> getAvailableTowers() {
         return availableTowers;
     }
 

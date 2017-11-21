@@ -12,22 +12,17 @@ import java.util.concurrent.Executors;
 @Service
 public class GameExecutor implements Runnable {
 
-    private static final long STEP_TIME = 100;
+    private static final long STEP_TIME = 50;
 
     @NotNull
     private final Game game;
-
-    @NotNull
-    private final TickerService ticker;
 
     private Clock clock = Clock.systemDefaultZone();
 
     private Executor executor = Executors.newSingleThreadExecutor();
 
-    public GameExecutor(@NotNull Game game,
-                        @NotNull TickerService ticker) {
+    public GameExecutor(@NotNull Game game) {
         this.game = game;
-        this.ticker = ticker;
     }
 
     @PostConstruct

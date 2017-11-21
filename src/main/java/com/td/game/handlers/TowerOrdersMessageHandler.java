@@ -32,9 +32,6 @@ public class TowerOrdersMessageHandler extends MessageHandler<TowerOrderMessage>
 
     @Override
     public void handle(@NotNull TowerOrderMessage message, Long id) {
-        if (!message.getPlayerId().equals(id)) {
-            return;
-        }
         game.addTowerOrders(message.getOrderedTower(), message.getXcoord(), message.getYcoord(), id);
     }
 }

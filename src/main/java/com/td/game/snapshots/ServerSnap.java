@@ -16,12 +16,13 @@ public class ServerSnap extends Message {
     private List<ShotEvent.ShotEventSnapshot> shotEvents;
     private int waveNumber;
     private int hp;
+    private long playerId;
 
     public ServerSnap() {
 
     }
 
-    public static  ServerSnapBuilder builder() {
+    public static ServerSnapBuilder builder() {
         return new ServerSnap().new ServerSnapBuilder();
     }
 
@@ -47,6 +48,10 @@ public class ServerSnap extends Message {
 
     public int getHp() {
         return hp;
+    }
+
+    public void setPlayerId(Long playerId) {
+        this.playerId = playerId;
     }
 
     public final class ServerSnapBuilder {

@@ -11,12 +11,12 @@ public class Player implements Snapshotable<Player> {
     private int level;
     private static final int START_MONEY = 100;
 
-    public Player(Long id) {
+    public Player(Long id, String gameClass) {
         this.id = id;
         this.money = START_MONEY;
         this.scores = 0;
         this.level = 0;
-        this.playerClass = "";
+        this.playerClass = gameClass;
 
     }
 
@@ -41,8 +41,16 @@ public class Player implements Snapshotable<Player> {
         this.scores = scores;
     }
 
+    public void updateScores(int scores) {
+        this.scores += scores;
+    }
+
     public PlayerSnapshot getSnapshot() {
         return new PlayerSnapshot(this);
+    }
+
+    public void updateMoney(int money) {
+        this.money += money;
     }
 
     public class PlayerSnapshot implements Snapshot<Player> {

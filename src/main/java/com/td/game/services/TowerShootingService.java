@@ -12,18 +12,19 @@ import java.util.stream.Collectors;
 @Service
 public class TowerShootingService {
 
-    public void processTowerShooting(@NotNull GameSession session, long delta) {
+    public void processTowerShooting(@NotNull GameSession session) {
         List<Area> areas = session.getAreas();
         session.getCurrentWave()
                 .getRunning()
                 .forEach(monster ->
                         areas.forEach(area -> area.addObjectIfCollision(monster)));
-
-        List<ShotEvent> shots = areas.stream()
-                .flatMap(area -> area.getTower().fire(delta, area).stream())
+        List<ShotEvent> shots = areas
+                .stream()
+                .filter(area -> area.size() > 0)
+                .flatMap(area -> area.getTower().fire(area).stream())
                 .collect(Collectors.toList());
         session.setShotEvents(shots);
-        areas.clear();
+        areas.forEach(Area::clear);
     }
 
     public void reloadTowers(@NotNull GameSession session, long delta) {

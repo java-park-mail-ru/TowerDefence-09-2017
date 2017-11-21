@@ -1,8 +1,8 @@
 {
   "class": "Adventurer",
   "availableTowers": [
-    "BlueTower",
-    "OrangeTower",
-    "RedTower"
+    101,
+    102,
+    103
   ]
 }

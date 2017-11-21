@@ -6,15 +6,15 @@ import com.td.websocket.Message;
 
 public class TowerOrderMessage extends Message {
     private Long playerId;
-    private String orderedTower;
+    private Integer orderedTower;
     private long ycoord;
     private long xcoord;
 
     @JsonCreator
     TowerOrderMessage(@JsonProperty("playerId") Long playerId,
-                      @JsonProperty("orderedTower") String orderedTower,
-                      @JsonProperty("x") long ycoord,
-                      @JsonProperty("y") long xcoord) {
+                      @JsonProperty("orderedTower") Integer orderedTower,
+                      @JsonProperty("x") long xcoord,
+                      @JsonProperty("y") long ycoord) {
         this.playerId = playerId;
         this.orderedTower = orderedTower;
         this.ycoord = ycoord;
@@ -25,11 +25,11 @@ public class TowerOrderMessage extends Message {
         this.playerId = playerId;
     }
 
-    public void setOrderedTower(String orderedTower) {
+    public void setOrderedTower(Integer orderedTower) {
         this.orderedTower = orderedTower;
     }
 
-    public String getOrderedTower() {
+    public Integer getOrderedTower() {
         return orderedTower;
     }
 

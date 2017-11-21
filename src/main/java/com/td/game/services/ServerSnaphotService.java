@@ -47,7 +47,9 @@ public class ServerSnaphotService {
                 .build();
         for (Player player : session.getPlayers()) {
             try {
+                snap.setPlayerId(player.getId());
                 transportService.sendMessageToUser(player.getId(), snap);
+
             } catch (IOException e) {
                 throw new SnapshotSendingException("Unable to send server snapshot to " + player.getId(), e);
             }

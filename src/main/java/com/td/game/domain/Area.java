@@ -39,7 +39,8 @@ public class Area {
     }
 
     public void addObjectIfCollision(Monster obj) {
-        if (checkCollision(obj)) {
+        boolean check = checkCollision(obj);
+        if (check) {
             monsters.offer(obj);
         }
     }
@@ -74,5 +75,9 @@ public class Area {
 
     public Tower getTower() {
         return tower;
+    }
+
+    public int size() {
+        return monsters.size();
     }
 }

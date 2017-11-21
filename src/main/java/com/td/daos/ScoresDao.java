@@ -24,7 +24,8 @@ public class ScoresDao implements IScoreDao {
 
     @Override
     public void addScores(User user, int scores) {
-        Score score = new Score(scores, user);
+        Score score = new Score(scores);
+        user.addScores(score);
         try {
             em.persist(score);
         } catch (PersistenceException except) {
