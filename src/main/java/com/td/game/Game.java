@@ -23,7 +23,7 @@ public class Game {
     private final Logger log = LoggerFactory.getLogger(Game.class);
 
     //temoral hack for development
-    private static final int GAME_LOBBY_SIZE = 1;
+    private static final int GAME_LOBBY_SIZE = 2;
 
     @NotNull
     private final GameSessionService gameSessionService;
@@ -108,12 +108,8 @@ public class Game {
         List<GameSession> finishedSessions = new ArrayList<>();
         long delta = time - timeBuffer;
         timeBuffer = time;
-
-        while (true) {
-            TowerManager.TowerOrder order = towerOrders.poll();
-            if (order == null) {
-                break;
-            }
+        TowerManager.TowerOrder order;
+        while ((order = towerOrders.poll()) != null) {
             log.trace("Order for player {} in process", order.getPlayerId());
             GameSession session = gameSessionService.getSessionForUser(order.getPlayerId());
             towerManager.processOrder(session, order);

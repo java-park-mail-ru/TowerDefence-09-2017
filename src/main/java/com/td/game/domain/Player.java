@@ -9,14 +9,17 @@ public class Player implements Snapshotable<Player> {
     private int scores;
     private String playerClass;
     private int level;
+    private String nickname;
+
     private static final int START_MONEY = 100;
 
-    public Player(Long id, String gameClass) {
+    public Player(Long id, String gameClass, String nickname) {
         this.id = id;
         this.money = START_MONEY;
         this.scores = 0;
         this.level = 0;
         this.playerClass = gameClass;
+        this.nickname = nickname;
 
     }
 
@@ -53,17 +56,35 @@ public class Player implements Snapshotable<Player> {
         this.money += moneyDelta;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public String getPlayerClass() {
+        return playerClass;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
     public class PlayerSnapshot implements Snapshot<Player> {
         private Long id;
         private long money;
         private int scores;
         private String playerClass;
+        private String nickname;
 
         PlayerSnapshot(Player player) {
             this.id = player.id;
             this.money = player.money;
             this.scores = player.scores;
             this.playerClass = player.playerClass;
+            this.nickname = player.nickname;
         }
 
         public Long getId() {
@@ -80,6 +101,10 @@ public class Player implements Snapshotable<Player> {
 
         public String getPlayerClass() {
             return playerClass;
+        }
+
+        public String getNickname() {
+            return nickname;
         }
     }
 

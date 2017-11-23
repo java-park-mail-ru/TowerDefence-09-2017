@@ -89,19 +89,19 @@ public class User {
     }
 
     public void updateEmail(String newEmail) {
-        if (newEmail != null) {
+        if (newEmail != null && !newEmail.isEmpty()) {
             setEmail(newEmail);
         }
     }
 
     public void updateNickname(String newNickname) {
-        if (newNickname != null) {
+        if (newNickname != null && !newNickname.isEmpty()) {
             setNickname(newNickname);
         }
     }
 
     public void updatePassword(String newPassword) {
-        if (newPassword != null) {
+        if (newPassword != null && !newPassword.isEmpty()) {
             setPassword(newPassword);
         }
     }

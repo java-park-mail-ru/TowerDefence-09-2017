@@ -12,8 +12,8 @@ import java.util.*;
 @Service
 public class MonsterWaveGenerator {
 
-    private static final long WAVE_START_DELAY = 10000;
-    private static final long NEW_MONSTER_DELAY = 500;
+    public static final long WAVE_START_DELAY = 10000;
+    public static final long NEW_MONSTER_DELAY = 500;
 
     @NotNull
     private final ResourceFactory resourceFactory;

@@ -29,6 +29,7 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
         this.weight = resource.weight;
         this.relativeCoord = new Point<>(0.0, 0.0);
         this.typeid = resource.typeid;
+        this.reward = resource.reward;
     }
 
     public int getHp() {

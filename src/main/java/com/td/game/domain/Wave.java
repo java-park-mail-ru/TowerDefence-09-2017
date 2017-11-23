@@ -86,11 +86,12 @@ public class Wave implements Snapshotable<Wave> {
         if (localTimeBuffer >= monsterEnterDelay) {
             localTimeBuffer -= monsterEnterDelay;
             Monster monster = pending.poll();
-            if (monster == null) {
+            if (pending.isEmpty()) {
                 this.status = WaveStatus.RUNNING;
-                return;
             }
-            running.add(monster);
+            if (monster != null) {
+                running.add(monster);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.td.mechanic;
 
+import com.td.game.GameExecutor;
 import com.td.websocket.TransportService;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -16,4 +17,8 @@ public class GameTestConfig {
     public TransportService nameService() {
         return Mockito.mock(TransportService.class);
     }
+
+    @Bean
+    @Primary
+    public GameExecutor gameExecutor() {return Mockito.mock(GameExecutor.class);}
 }

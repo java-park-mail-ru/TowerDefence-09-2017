@@ -75,7 +75,7 @@ public class GameSessionService {
         map.setPathTitles(path.getPathPoints());
         Wave wave = waveService.generateWave(0, paths);
         List<Player> players = users.stream()
-                .map(user -> new Player(user.getId(), user.getProfile().getGameClass()))
+                .map(user -> new Player(user.getId(), user.getProfile().getGameClass(), user.getNickname()))
                 .collect(Collectors.toList());
 
         Map<String, PlayerClass> availableClasses = users.stream()

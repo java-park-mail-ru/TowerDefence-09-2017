@@ -71,6 +71,7 @@ public class ServerSnap extends Message {
         }
 
         public ServerSnapBuilder setShotEvents(List<ShotEvent.ShotEventSnapshot> shotEventsSnaps) {
+
             shotEvents = shotEventsSnaps;
             return this;
         }

@@ -23,6 +23,7 @@ public class ServerSnaphotService {
     }
 
     public void sendServerSnapshot(@NotNull GameSession session) {
+
         ServerSnap snap = ServerSnap.builder()
                 .setPlayersSnap(session
                         .getPlayers()
@@ -38,7 +39,7 @@ public class ServerSnaphotService {
                         .getCurrentWave()
                         .getSnapshot())
                 .setShotEvents(session
-                        .getShots()
+                        .getShotEvents()
                         .stream()
                         .map(ShotEvent::getSnapshot)
                         .collect(Collectors.toList()))

@@ -23,9 +23,6 @@ public class GameSession {
     private int waveNumber = 0;
     private int hp = BASE_HP;
 
-
-    private final List<ShotEvent> shots;
-
     private final List<Path> paths;
     private List<ShotEvent> shotEvents;
 
@@ -39,7 +36,7 @@ public class GameSession {
         this.id = ID_SOURCE.getAndIncrement();
         this.gameMap = gameMap;
         this.towers = new ArrayList<>();
-        this.shots = new ArrayList<>();
+        this.shotEvents = new ArrayList<>();
         this.areas = new ArrayList<>();
         this.currentWave = currentWave;
         this.paths = paths;
@@ -59,10 +56,6 @@ public class GameSession {
 
     public List<Tower> getTowers() {
         return towers;
-    }
-
-    public List<ShotEvent> getShots() {
-        return shots;
     }
 
     public int getWaveNumber() {

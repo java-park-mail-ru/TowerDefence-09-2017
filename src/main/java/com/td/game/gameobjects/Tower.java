@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tower extends GameObject implements Snapshotable<Tower> {
-    public int getDamage() {
-        return damage;
-    }
 
     private int damage;
     private boolean ready;
@@ -41,6 +38,10 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         this.titlePosition = new Point<>(0L, 0L);
         this.ready = true;
         this.msSinceLastShot = resource.period;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     public void reload(long delta) {
@@ -82,6 +83,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
                     break;
                 }
                 owner.updateScores(damage * target.getReward());
+
             }
         }
         ready = false;

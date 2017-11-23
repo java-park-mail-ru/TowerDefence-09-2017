@@ -8,12 +8,8 @@ import com.td.dtos.constraints.UniqueNickname;
 import com.td.dtos.constraints.UserExistence;
 import com.td.dtos.groups.NewUser;
 import com.td.dtos.groups.UpdateUser;
-import  javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @JsonAutoDetect
 public class UserDto {
@@ -23,6 +19,7 @@ public class UserDto {
             message = "Incorrect login field length",
             min = Constants.MIN_LOGIN_LENGHT,
             max = Constants.MAX_LOGIN_LENGTH)
+
     @Pattern(
             message = "Login field contains incorrect characters",
             regexp = "^\\w*$")
@@ -39,7 +36,6 @@ public class UserDto {
     @NotBlank(message = "Email field is required", groups = NewUser.class)
     @Email(message = "Invalid email")
     @UserExistence(value = false, message = "Email already registered")
-
     private String email;
 
 

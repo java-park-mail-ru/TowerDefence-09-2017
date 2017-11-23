@@ -33,7 +33,7 @@ public class ShotEvent implements Snapshotable<ShotEvent> {
         return new ShotEventSnapshot(this);
     }
 
-    public class ShotEventSnapshot implements Snapshot<ShotEvent> {
+    public static class ShotEventSnapshot implements Snapshot<ShotEvent> {
         private final Long monsterId;
         private final Long towerId;
         private final Long offset;
