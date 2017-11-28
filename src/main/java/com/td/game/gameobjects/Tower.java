@@ -190,4 +190,8 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
     public void setPeriod(long period) {
         this.period = period;
     }
+
+    public Point<Long> getTitlePosition() {
+        return titlePosition;
+    }
 }

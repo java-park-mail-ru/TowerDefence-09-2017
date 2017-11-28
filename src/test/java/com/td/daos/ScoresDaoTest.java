@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 @Transactional
 public class ScoresDaoTest {
     @Autowired
@@ -31,7 +33,7 @@ public class ScoresDaoTest {
 
     @Before
     public void regTestUser() {
-        User user = userDao.createUser("testname", "testemail@mail.ru", "password");
+        User user = userDao.createUser("testname", "testemail@mail.ru", "password", "Adventurer");
         this.testUID = user.getId();
     }
 

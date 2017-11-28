@@ -10,13 +10,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 public class ResourceSystemTest {
 
     @Autowired
@@ -32,10 +36,10 @@ public class ResourceSystemTest {
 
     @Test
     public void testMonsterLoading() {
-        Monster.MonsterResource mr = resourceFactory.loadResource("RedMonster.json", Monster.MonsterResource.class);
+        Monster.MonsterResource mr = resourceFactory.loadResource("monsters/RedMonster.json", Monster.MonsterResource.class);
         assertNotNull(mr);
         Monster monster = new Monster(mr);
-        assertEquals(monster.getHp(), 100);
+        assertNotNull(monster);
     }
 
     @Test
@@ -43,5 +47,12 @@ public class ResourceSystemTest {
         PlayerClass pc = resourceFactory.loadResource("Adventurer.json", Adventurer.class);
         assertNotNull(pc);
         assertEquals(3, pc.getAvailableTowers().size());
+    }
+
+    @Test
+    public void testMonstersListLoading() {
+        List<Monster.MonsterResource> mr = resourceFactory.loadResourceList("monsters/MonstersList.json", Monster.MonsterResource.class);
+        assertNotNull(mr);
+        assertEquals(3, mr.size());
     }
 }

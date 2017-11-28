@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class GameSession {
     private static final AtomicLong ID_SOURCE = new AtomicLong(0);
-    private static final int BASE_HP = 100;
+
     private final long id;
     private final List<Player> players;
     private final Map<Long, PlayerClass> playersClasses;
@@ -21,7 +21,7 @@ public class GameSession {
     private final List<Area> areas;
     private Wave currentWave;
     private int waveNumber = 0;
-    private int hp = BASE_HP;
+    private int hp = 0;
 
     private final List<Path> paths;
     private List<ShotEvent> shotEvents;
@@ -30,7 +30,8 @@ public class GameSession {
                        Map<Long, PlayerClass> playersClasses,
                        GameMap gameMap,
                        Wave currentWave,
-                       List<Path> paths) {
+                       List<Path> paths,
+                       GameParams params) {
         this.players = players;
         this.playersClasses = playersClasses;
         this.id = ID_SOURCE.getAndIncrement();
@@ -40,6 +41,8 @@ public class GameSession {
         this.areas = new ArrayList<>();
         this.currentWave = currentWave;
         this.paths = paths;
+        this.hp = params.getBaseMaxHp();
+        this.players.forEach(player -> player.setMoney(params.getInitialMoney()));
     }
 
     public List<Player> getPlayers() {

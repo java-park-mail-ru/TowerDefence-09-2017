@@ -1,0 +1,7 @@
+{
+  "resources": [
+    "monsters/BlueMonster.json",
+    "monsters/RedMonster.json",
+    "monsters/OrangeMonster.json"
+  ]
+}

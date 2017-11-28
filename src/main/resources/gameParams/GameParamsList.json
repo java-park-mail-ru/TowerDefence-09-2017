@@ -1,0 +1,8 @@
+{
+  "resources": [
+    "gameParams/GameParams_1.json",
+    "gameParams/GameParams_2.json",
+    "gameParams/GameParams_3.json",
+    "gameParams/GameParams_4.json"
+  ]
+}

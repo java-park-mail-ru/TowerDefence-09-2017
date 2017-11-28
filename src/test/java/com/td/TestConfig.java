@@ -1,4 +1,4 @@
-package com.td.mechanic;
+package com.td;
 
 import com.td.game.GameExecutor;
 import com.td.websocket.TransportService;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 
 @Profile("test")
 @Configuration
-public class GameTestConfig {
+public class TestConfig {
 
     @Bean
     @Primary

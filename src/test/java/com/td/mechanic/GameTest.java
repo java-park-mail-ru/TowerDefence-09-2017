@@ -3,12 +3,12 @@ package com.td.mechanic;
 import com.td.daos.UserDao;
 import com.td.domain.User;
 import com.td.game.GameSession;
-import com.td.game.domain.Wave;
+import com.td.game.domain.*;
 import com.td.game.gameobjects.Monster;
 import com.td.game.gameobjects.Path;
-import com.td.game.services.GameSessionService;
-import com.td.game.services.MonsterWaveGenerator;
-import com.td.game.services.MonsterWaveProcessorService;
+import com.td.game.gameobjects.Tower;
+import com.td.game.resource.ResourceFactory;
+import com.td.game.services.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +31,8 @@ import static org.junit.Assert.*;
 @ActiveProfiles("test")
 @Transactional
 public class GameTest {
+    @Autowired
+    public ResourceFactory resources;
 
     @Autowired
     private GameSessionService gameSessionService;
@@ -39,15 +41,18 @@ public class GameTest {
     private MonsterWaveProcessorService waveProcessor;
 
     @Autowired
-    private MonsterWaveGenerator waveGenerator;
+    private TowerManager towerManager;
+
+    @Autowired
+    private TowerShootingService shootingService;
 
     @Autowired
     private UserDao dao;
 
     @Before
     public void initialize() {
-        User us1 = dao.createUser("us1", "us1@mail.ru", "uuuuu");
-        User us2 = dao.createUser("us2", "us2@mail.ru", "uuuuu");
+        User us1 = dao.createUser("us1", "us1@mail.ru", "uuuuu", "Adventurer");
+        User us2 = dao.createUser("us2", "us2@mail.ru", "uuuuu", "Adventurer");
         List<User> users = new ArrayList<>();
         users.add(us1);
         users.add(us2);
@@ -64,11 +69,13 @@ public class GameTest {
     @Test
     public void testSessionInitialized() {
         Set<GameSession> sessions = gameSessionService.getSessions();
+        GameParams params = resources.loadResource("gameParams/GameParams_2.json", GameParams.class);
+
         assertTrue(sessions.size() == 1);
         for (GameSession session : sessions) {
             assertTrue(session.getPlayers().size() == 2);
             assertTrue(session.getPlayers().stream().allMatch(player ->
-                    player.getMoney() == 100 && player.getScores() == 0
+                    params.getInitialMoney() == player.getMoney() && player.getScores() == 0
             ));
             assertTrue(session.getWaveNumber() == 0);
             Wave wave = session.getCurrentWave();
@@ -114,6 +121,68 @@ public class GameTest {
             }
             waveProcessor.processWave(session, 50);
             assertEquals(Wave.WaveStatus.FINISHED, wave.getStatus());
+        }
+    }
+
+    @Test
+    public void testTowersPlacement() {
+        Set<GameSession> sessions = gameSessionService.getSessions();
+        assertEquals(1, sessions.size());
+
+        for (GameSession session : sessions) {
+            Player firstPlayer = session.getPlayers().get(0);
+            Player secondPlayer = session.getPlayers().get(1);
+            GameMap map = session.getGameMap();
+
+            //must be placed
+            TowerManager.TowerOrder firstPlayerOrder = new TowerManager.TowerOrder(0, 2, 101, firstPlayer.getId());
+
+            towerManager.processOrder(session, firstPlayerOrder);
+            List<Tower> towers = session.getTowers();
+            assertEquals(1, towers.size());
+
+            Tower tower = towers.get(0);
+
+            assertSame(tower.getOwner(), firstPlayer);
+            assertEquals(tower.getTitlePosition(), new Point<>(0L, 2L));
+            assertSame(map.getTitle(tower.getTitlePosition()).getOwner(), tower);
+
+            //must NOT be placed
+            TowerManager.TowerOrder secondPlayerOrder = new TowerManager.TowerOrder(0, 2, 101, secondPlayer.getId());
+            towerManager.processOrder(session, secondPlayerOrder);
+
+            assertSame(towers, session.getTowers());
+            assertEquals(1, towers.size());
+            assertSame(map.getTitle(tower.getTitlePosition()).getOwner(), tower);
+
+        }
+    }
+
+    @Test
+    public void testTowerShooting() {
+        Set<GameSession> sessions = gameSessionService.getSessions();
+        assertEquals(1, sessions.size());
+
+        for (GameSession session : sessions) {
+            Player firstPlayer = session.getPlayers().get(0);
+            TowerManager.TowerOrder towerOrder = new TowerManager.TowerOrder(0, 2, 101, firstPlayer.getId());
+            towerManager.processOrder(session, towerOrder);
+            Monster monster = session.getCurrentWave().getPending().peek();
+            waveProcessor.processWave(session, MonsterWaveGenerator.WAVE_START_DELAY);
+            waveProcessor.processWave(session, MonsterWaveGenerator.NEW_MONSTER_DELAY);
+
+            Tower tower = session.getTowers().get(0);
+            Area shootingArea = tower.getRangeArea();
+
+            assertTrue(shootingArea.checkCollision(monster));
+            assertTrue(tower.isReady());
+            Integer maxHp = monster.getHp();
+            shootingService.processTowerShooting(session);
+            List<ShotEvent> events = session.getShotEvents();
+            assertEquals(1, events.size());
+            assertEquals(maxHp - tower.getDamage(), monster.getHp());
+            assertEquals(firstPlayer.getScores(), monster.getReward() * tower.getDamage());
+            assertFalse(tower.isReady());
         }
     }
 

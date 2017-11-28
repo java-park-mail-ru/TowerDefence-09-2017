@@ -19,7 +19,7 @@ public interface IUserDao {
 
     List<User> getUsersByNicknames(List<String> nicknames);
 
-    User createUser(String nickname, String email, String password);
+    User createUser(String nickname, String email, String password, String gameClass);
 
     User storeUser(User user);
 

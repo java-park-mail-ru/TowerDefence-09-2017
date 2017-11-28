@@ -64,7 +64,7 @@ public class AuthenticationController {
             throw new AuthException("user is logged in already", "/signup", HttpStatus.CONFLICT);
         }
 
-        user.setProfile(new GameProfile("Adventurer"));
+        user.setProfile(new GameProfile(userDto.getGameClass()));
         userDao.storeUser(user);
         httpSession.setAttribute(Constants.USER_SESSION_KEY, user.getId());
 

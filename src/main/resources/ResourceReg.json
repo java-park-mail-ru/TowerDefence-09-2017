@@ -3,15 +3,15 @@
   "reg": [
     {
       "typeid": 101,
-      "resource": "BlueTower.json"
+      "resource": "towers/BlueTower.json"
     },
     {
       "typeid": 102,
-      "resource": "RedTower.json"
+      "resource": "towers/RedTower.json"
     },
     {
       "typeid": 103,
-      "resource": "OrangeTower.json"
+      "resource": "towers/OrangeTower.json"
     }
   ]
 }

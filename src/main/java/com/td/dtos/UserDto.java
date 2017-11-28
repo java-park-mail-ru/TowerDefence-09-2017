@@ -3,6 +3,7 @@ package com.td.dtos;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.td.Constants;
+import com.td.dtos.constraints.GameClass;
 import com.td.dtos.constraints.PasswordValid;
 import com.td.dtos.constraints.UniqueNickname;
 import com.td.dtos.constraints.UserExistence;
@@ -42,15 +43,20 @@ public class UserDto {
     @NotNull(message = "Id field is required", groups = UpdateUser.class)
     private Long id;
 
+    @GameClass(groups = NewUser.class)
+    private String gameClass;
+
 
     public UserDto(String login,
                    String password,
                    String email,
-                   Long id) {
+                   Long id,
+                   String gameClass) {
         this.login = login;
         this.password = password;
         this.email = email;
         this.id = id;
+        this.gameClass = gameClass;
     }
 
     public UserDto() {
@@ -58,6 +64,7 @@ public class UserDto {
         this.password = "";
         this.email = "";
         this.id = 0L;
+        this.gameClass = "";
     }
 
     public String getLogin() {
@@ -92,4 +99,11 @@ public class UserDto {
         this.id = id;
     }
 
+    public String getGameClass() {
+        return gameClass;
+    }
+
+    public void setGameClass(String gameClass) {
+        this.gameClass = gameClass;
+    }
 }

@@ -41,7 +41,8 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
                 .perform(post("/auth/signup")
@@ -68,7 +69,8 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         MockHttpServletResponse response = this.mockMvc
                 .perform(post("/auth/signup")
@@ -84,7 +86,8 @@ public class UserControllerTest {
                 "newLogin",
                 null,
                 null,
-                returned.getId()
+                returned.getId(),
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/user/edit")
@@ -127,7 +130,8 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         MockHttpServletResponse response = this.mockMvc
                 .perform(post("/auth/signup")
@@ -142,7 +146,8 @@ public class UserControllerTest {
                 "newLogin",
                 null,
                 null,
-                returned.getId()
+                returned.getId(),
+                "Adventuer"
         );
         this.mockMvc
                 .perform(post("/user/edit")
@@ -158,7 +163,8 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         MockHttpServletResponse response = this.mockMvc
                 .perform(post("/auth/signup")
@@ -174,7 +180,8 @@ public class UserControllerTest {
                 "newLogin",
                 null,
                 null,
-                returned.getId() + 1
+                returned.getId() + 1,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/user/edit")

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ResourceFactory {
@@ -40,6 +42,20 @@ public class ResourceFactory {
 
     public <T extends Resource> T loadResource(Integer typeid, Class<T> clazz) {
         return loadResource(resourceReg.getResourcePath(typeid), clazz);
+    }
+
+    public <T extends Resource> List<T> loadResourceList(String path, Class<T> clazz) {
+
+        try {
+            ResourceList resList = objectMapper.readValue(Resources.getResource(path), ResourceList.class);
+            return resList
+                    .getResourcesUrls()
+                    .stream()
+                    .map(url -> loadResource(url, clazz))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new ResourceException(clazz, path, e);
+        }
     }
 
 }

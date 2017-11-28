@@ -7,6 +7,7 @@ import com.td.game.resource.ResourceFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -17,17 +18,25 @@ public class MonsterWaveGenerator {
 
     @NotNull
     private final ResourceFactory resourceFactory;
+
+    private List<Monster.MonsterResource> availableMonsters;
+
     private Random randomGenerator = new Random(System.currentTimeMillis());
 
     public MonsterWaveGenerator(@NotNull ResourceFactory resourceFactory) {
         this.resourceFactory = resourceFactory;
     }
 
+    @PostConstruct
+    public void init() {
+        availableMonsters = resourceFactory.loadResourceList("monsters/MonstersList.json", Monster.MonsterResource.class);
+    }
+
     public Wave generateWave(int waveNumber, List<Path> paths) {
         List<Monster> monsters = new ArrayList<>();
         Map<Path, List<Monster>> pathBindings = new HashMap<>();
         for (int i = 0; i <= waveNumber; ++i) {
-            Monster monster = createMonster("RedMonster.json");
+            Monster monster = createRandomMonster();
             Path path = paths.get(randomGenerator.nextInt(paths.size()));
             monster.setCoord(path.getInitalPoint());
             monsters.add(monster);
@@ -46,7 +55,10 @@ public class MonsterWaveGenerator {
         return new Wave(monsters, pathBindings, WAVE_START_DELAY, NEW_MONSTER_DELAY);
     }
 
-    public Monster createMonster(String path) {
-        return new Monster(resourceFactory.loadResource(path, Monster.MonsterResource.class));
+    @NotNull
+    private Monster createRandomMonster() {
+        Integer randomIdx = randomGenerator.nextInt(availableMonsters.size());
+        return new Monster(availableMonsters.get(randomIdx));
     }
+
 }

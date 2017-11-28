@@ -17,10 +17,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 @Service
-public class Game {
+public class GameManager {
 
     @NotNull
-    private final Logger log = LoggerFactory.getLogger(Game.class);
+    private final Logger log = LoggerFactory.getLogger(GameManager.class);
 
     //temoral hack for development
     private static final int GAME_LOBBY_SIZE = 2;
@@ -55,14 +55,14 @@ public class Game {
     private final TransportService transportService;
 
 
-    public Game(@NotNull GameSessionService gameSessionService,
-                @NotNull ServerSnaphotService serverSnaphotService,
-                @NotNull UserDao userDao,
-                @NotNull MonsterWaveProcessorService waveProcessor,
+    public GameManager(@NotNull GameSessionService gameSessionService,
+                       @NotNull ServerSnaphotService serverSnaphotService,
+                       @NotNull UserDao userDao,
+                       @NotNull MonsterWaveProcessorService waveProcessor,
 
-                @NotNull TowerManager towerManager,
-                @NotNull TowerShootingService towerShootingService,
-                @NotNull TransportService transportService) {
+                       @NotNull TowerManager towerManager,
+                       @NotNull TowerShootingService towerShootingService,
+                       @NotNull TransportService transportService) {
         this.gameSessionService = gameSessionService;
         this.serverSnaphotService = serverSnaphotService;
         this.userDao = userDao;

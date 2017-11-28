@@ -37,7 +37,8 @@ public class AuthControllerTest {
                 "testSignupSuccess",
                 "password",
                 "testSignupSuccess@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -58,7 +59,8 @@ public class AuthControllerTest {
                 "testSignupSuccess",
                 "password",
                 "testSignupSuccess@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
                 .perform(post("/auth/signup")
@@ -79,7 +81,8 @@ public class AuthControllerTest {
                 "testSigninAfterLogout",
                 "password",
                 "testSigninAfterLogout@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
                 .perform(post("/auth/signup")
@@ -95,7 +98,8 @@ public class AuthControllerTest {
                 null,
                 "password",
                 "testSigninAfterLogout@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signin")
@@ -115,7 +119,8 @@ public class AuthControllerTest {
                 "iv",
                 "password",
                 "valid@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -133,7 +138,8 @@ public class AuthControllerTest {
                 "login",
                 "password",
                 "invalid mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -152,7 +158,8 @@ public class AuthControllerTest {
                 "login",
                 "ps",
                 "testSignupWithInvalidNickname@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -171,7 +178,8 @@ public class AuthControllerTest {
                 "iv",
                 "ps",
                 "invalid mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -185,12 +193,6 @@ public class AuthControllerTest {
 
     @Test
     public void testLogoutWithoutSession() throws Exception {
-        TestUserDto unregistered = new TestUserDto(
-                "unregistered",
-                "password",
-                "unregistered@mail.ru",
-                null
-        );
         this.mockMvc.perform(post("/auth/logout"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("type").value("authorization_error"));
@@ -204,7 +206,8 @@ public class AuthControllerTest {
                 null,
                 "password",
                 "unregistered@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signin")
@@ -222,13 +225,15 @@ public class AuthControllerTest {
                 "some",
                 "password",
                 "some@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         TestUserDto sameEmail = new TestUserDto(
                 "same",
                 "password",
                 "some@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -238,8 +243,8 @@ public class AuthControllerTest {
 
         this.mockMvc
                 .perform(post("/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(sameEmail)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(sameEmail)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("type").value("incorrect_request_data"))
                 .andExpect(jsonPath("$.incorrectRequestDataErrors[0].fieldName").value("email"));
@@ -251,13 +256,15 @@ public class AuthControllerTest {
                 "some",
                 "password",
                 "some@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         TestUserDto sameNickname = new TestUserDto(
                 "some",
                 "password",
                 "other@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
                 .perform(post("/auth/signup")
@@ -280,7 +287,8 @@ public class AuthControllerTest {
                 "SignupAlreadySignedIn",
                 "password",
                 "SASI@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
                 .perform(post("/auth/signup")
@@ -289,12 +297,12 @@ public class AuthControllerTest {
                 .andReturn().getResponse().getCookie("SESSION");
 
         TestUserDto otherUser = new TestUserDto(
-                "SASIOtherUser",
+                "otherUser",
                 "password",
-                "SASIOtherUser@mail.ru",
-                null
+                "otherUser@mail.ru",
+                null,
+                "Adventurer"
         );
-
         this.mockMvc
                 .perform(post("/auth/signup")
                         .cookie(session)
@@ -302,11 +310,4 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(otherUser)))
                 .andExpect(status().isConflict());
     }
-
-    @Test
-    public void testSigninAlreadySignedIn() throws Exception {
-
-    }
-
-
 }

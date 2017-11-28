@@ -4,10 +4,7 @@ import com.td.daos.ScoresDao;
 import com.td.daos.UserDao;
 import com.td.domain.User;
 import com.td.game.GameSession;
-import com.td.game.domain.GameMap;
-import com.td.game.domain.Player;
-import com.td.game.domain.PlayerClass;
-import com.td.game.domain.Wave;
+import com.td.game.domain.*;
 import com.td.game.gameobjects.Path;
 import com.td.game.resource.ResourceFactory;
 import com.td.game.snapshots.GameFinishMessage;
@@ -16,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,6 +47,9 @@ public class GameSessionService {
     @NotNull
     private final GameInitService gameInitService;
 
+    @NotNull
+    private List<GameParams> gameSessionsParams;
+
     public GameSessionService(@NotNull TransportService transport,
                               @NotNull ResourceFactory resourceFactory,
                               @NotNull PathGenerateService pathGenerator,
@@ -63,6 +64,12 @@ public class GameSessionService {
         this.userDao = userDao;
         this.scoresDao = scoresDao;
         this.gameInitService = gameInitService;
+        this.gameSessionsParams = new ArrayList<>();
+    }
+
+    @PostConstruct
+    public void init() {
+        this.gameSessionsParams = resourceFactory.loadResourceList("gameParams/GameParamsList.json", GameParams.class);
     }
 
     public void startGame(List<User> users) {
@@ -90,7 +97,8 @@ public class GameSessionService {
                         .toMap(User::getId,
                                 user -> availableClasses.get(user.getProfile().getGameClass())
                         ));
-        GameSession session = new GameSession(players, playersClasses, map, wave, paths);
+        GameParams sessionParams = gameSessionsParams.get(users.size() - 1);
+        GameSession session = new GameSession(players, playersClasses, map, wave, paths, sessionParams);
         gameInitService.initGameInSession(session);
         sessions.add(session);
         users.forEach(user -> usersSessions.put(user.getId(), session));

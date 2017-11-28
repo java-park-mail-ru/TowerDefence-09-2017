@@ -1,0 +1,5 @@
+{
+  "class": "GameParams",
+  "maxHp": 50,
+  "startMoney": 50
+}

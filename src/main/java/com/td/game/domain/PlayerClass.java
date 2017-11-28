@@ -23,4 +23,5 @@ public abstract class PlayerClass extends Resource {
         return availableTowers;
     }
 
+
 }

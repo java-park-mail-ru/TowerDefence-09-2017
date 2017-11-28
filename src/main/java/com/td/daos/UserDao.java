@@ -88,13 +88,13 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public User createUser(String nickname, String email, String password) {
+    public User createUser(String nickname, String email, String password, String gameClass) {
         try {
             User user = new User();
             user.setNickname(nickname);
             user.setEmail(email);
             user.setPassword(password);
-            user.setProfile(new GameProfile("Adventurer"));
+            user.setProfile(new GameProfile(gameClass));
             return storeUser(user);
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {

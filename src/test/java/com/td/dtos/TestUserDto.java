@@ -12,15 +12,19 @@ public class TestUserDto {
 
     private Long id;
 
+    private String gameClass;
+
     @JsonCreator
     public TestUserDto(@JsonProperty("login") String login,
                        @JsonProperty("password") String password,
                        @JsonProperty("email") String email,
-                       @JsonProperty("id") Long id) {
+                       @JsonProperty("id") Long id,
+                       @JsonProperty("gameClass") String gameClass) {
         this.login = login;
         this.password = password;
         this.email = email;
         this.id = id;
+        this.gameClass = gameClass;
     }
 
     public String getLogin() {
@@ -53,5 +57,9 @@ public class TestUserDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getGameClass() {
+        return gameClass;
     }
 }
