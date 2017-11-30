@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class Adventurer extends PlayerClass {
+
     @JsonCreator
     Adventurer(@JsonProperty("availableTowers") List<Integer> availableTowers) {
         super(availableTowers);
@@ -15,4 +16,6 @@ public class Adventurer extends PlayerClass {
     public String toString() {
         return "Adventurer";
     }
+
+
 }

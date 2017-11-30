@@ -17,7 +17,7 @@ public class GameClassValidator implements ConstraintValidator<GameClass, String
 
 
     public void initialize(GameClass constraint) {
-        availableClasses = resourceFactory.loadResourceList("PlayersClassList.json", PlayerClass.class)
+        availableClasses = resourceFactory.loadResourceList("PlayerClassList.json", PlayerClass.class)
                 .stream()
                 .map(PlayerClass::toString)
                 .collect(Collectors.toSet());

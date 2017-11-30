@@ -1,6 +1,7 @@
 package com.td.game.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.td.game.resource.Resource;
@@ -23,5 +24,9 @@ public abstract class PlayerClass extends Resource {
         return availableTowers;
     }
 
+    @JsonProperty("className")
+    public String getClassName() {
+        return toString();
+    }
 
 }

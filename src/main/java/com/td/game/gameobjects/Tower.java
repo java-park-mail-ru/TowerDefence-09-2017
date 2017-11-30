@@ -185,6 +185,22 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         public int getCost() {
             return cost;
         }
+
+        public int getDamage() {
+            return damage;
+        }
+
+        public long getPeriod() {
+            return period;
+        }
+
+        public int getRange() {
+            return range;
+        }
+
+        public int getTypeid() {
+            return typeid;
+        }
     }
 
     public void setPeriod(long period) {

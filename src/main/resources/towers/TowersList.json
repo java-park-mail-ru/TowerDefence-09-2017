@@ -1,0 +1,7 @@
+{
+  "resources": [
+    "towers/BlueTower.json",
+    "towers/RedTower.json",
+    "towers/OrangeTower.json"
+  ]
+}
