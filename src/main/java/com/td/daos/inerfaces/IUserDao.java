@@ -31,8 +31,6 @@ public interface IUserDao {
 
     void removeUserByNickname(String nickname);
 
-    int removeUserByParams(Long id, String email, String nickname);
-
     User updateUserById(Long id, String email, String login, String password);
 
     User updateUserEmail(User user, String email);

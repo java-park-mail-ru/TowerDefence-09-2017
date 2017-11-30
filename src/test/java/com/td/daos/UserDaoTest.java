@@ -2,7 +2,6 @@ package com.td.daos;
 
 import com.td.daos.exceptions.UserDaoInvalidData;
 import com.td.daos.exceptions.UserDaoUpdateFail;
-import com.td.domain.GameProfile;
 import com.td.domain.User;
 import org.junit.Before;
 import org.junit.Rule;
@@ -186,22 +185,6 @@ public class UserDaoTest {
             assertFalse(dao.checkUserById(user.getId()));
 
         });
-    }
-
-    @Test
-    public void testUserRemoveByParams() {
-        int expZero = dao.removeUserByParams(null, null, null);
-        assertEquals(0, expZero);
-
-        User user = dao.getUserByNickname(uuids.get(0));
-        int expOne = dao.removeUserByParams(user.getId(), user.getEmail(), user.getNickname());
-        assertFalse(dao.checkUserById(user.getId()));
-        assertEquals(1, expOne);
-
-        int expTwo = dao.removeUserByParams(null, uuids.get(1) + EMAIL_SUFFIX, uuids.get(2));
-        assertFalse(dao.checkUserByEmail(uuids.get(1) + EMAIL_SUFFIX));
-        assertFalse(dao.checkUserByNickname(uuids.get(2)));
-        assertEquals(2, expTwo);
     }
 
     @Test

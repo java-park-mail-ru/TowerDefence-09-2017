@@ -7,19 +7,20 @@ import com.td.daos.inerfaces.IUserDao;
 import com.td.domain.GameProfile;
 import com.td.domain.User;
 import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @Transactional
 public class UserDao implements IUserDao {
+    private final Logger logger = LoggerFactory.getLogger(UserDao.class);
+
     private final EntityManager em;
 
     public UserDao(@Autowired EntityManager em) {
@@ -206,16 +207,20 @@ public class UserDao implements IUserDao {
         removeUserByParams(null, null, nickname);
     }
 
-    @Override
-    public int removeUserByParams(Long id, String email, String nickname) {
-        List<User> users = em.createQuery("SELECT u FROM User u WHERE u.id = :id or u.email = :email or u.nickname = :nickname", User.class)
-                .setParameter("id", id)
-                .setParameter("email", email)
-                .setParameter("nickname", nickname)
-                .getResultList();
-        for (User user : users) {
-            em.remove(user);
+
+    private void removeUserByParams(Long id, String email, String nickname) {
+        try {
+            if (id != null) {
+                em.remove(em.getReference(User.class, id));
+            } else {
+                User user = em.createQuery("SELECT u FROM User u WHERE u.email = :email or u.nickname = :nickname", User.class)
+                        .setParameter("email", email)
+                        .setParameter("nickname", nickname)
+                        .getSingleResult();
+                em.remove(user);
+            }
+        } catch (EntityNotFoundException e) {
+            logger.trace("Deleting of nonexisting user, id: {},email: {},nickname: {}", id, email, nickname, e);
         }
-        return users.size();
     }
 }
