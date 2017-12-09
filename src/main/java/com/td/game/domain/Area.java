@@ -30,12 +30,24 @@ public class Area {
         monsters.pollFirst();
     }
 
+    public boolean isUnderTopPoint(Point<Long> point) {
+        return top.getXcoord() <= point.getXcoord()
+                && top.getYcoord() <= point.getYcoord()
+                && bottom.getXcoord() > point.getXcoord()
+                && bottom.getYcoord() > point.getYcoord();
+    }
+
+    public boolean isOverBotPoint(Point<Long> point) {
+        return top.getXcoord() < point.getXcoord()
+                && top.getYcoord() < point.getYcoord()
+                && bottom.getXcoord() >= point.getXcoord()
+                && bottom.getYcoord() >= point.getYcoord();
+    }
+
     public boolean checkCollision(Monster obj) {
-        Point<Long> otherCoord = obj.getCoord().getTitleCoord();
-        return top.getXcoord() < otherCoord.getXcoord()
-                && top.getYcoord() < otherCoord.getYcoord()
-                && bottom.getXcoord() > otherCoord.getXcoord()
-                && bottom.getYcoord() > otherCoord.getYcoord();
+        Point<Long> topCoord = obj.getCoord().getTitleCoord();
+        Point<Long> botCoord = new Point<>(topCoord.getXcoord() + 1, topCoord.getYcoord() + 1);
+        return isUnderTopPoint(topCoord) || isOverBotPoint(botCoord);
     }
 
     public void addObjectIfCollision(Monster obj) {

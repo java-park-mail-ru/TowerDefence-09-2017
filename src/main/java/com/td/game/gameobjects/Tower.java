@@ -51,6 +51,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         this.msSinceLastShot += delta;
         if (msSinceLastShot >= period) {
             this.ready = true;
+
         }
     }
 
@@ -73,6 +74,10 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         List<ShotEvent> shots = new ArrayList<>();
         while (!area.isEmpty() && shotsDone < shotsCount) {
             Monster target = area.peekFirst();
+            if (target.getHp() <= 0) {
+                area.removeFirst();
+                continue;
+            }
             for (; shotsDone < shotsCount; ++shotsDone) {
                 target.setHp(target.getHp() - damage);
                 shots.add(new ShotEvent(target, this, shotsDone * period));
@@ -80,6 +85,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
                     area.removeFirst();
                     owner.updateScores(target.getReward() * (target.getHp() + damage));
                     owner.updateMoney(target.getReward() * target.getWeight());
+                    ++shotsDone;
                     break;
                 }
                 owner.updateScores(damage * target.getReward());
@@ -97,8 +103,8 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
 
     public Area getRangeArea() {
         if (rangeArea == null) {
-            Long topx = Math.max(0, titlePosition.getXcoord() - range) - 1;
-            Long topy = Math.max(0, titlePosition.getYcoord() - range) - 1;
+            Long topx = Math.max(0, titlePosition.getXcoord() - range);
+            Long topy = Math.max(0, titlePosition.getYcoord() - range);
             Long bottomx = titlePosition.getXcoord() + range + 1;
             Long bottomy = titlePosition.getYcoord() + range + 1;
             this.rangeArea = new Area(topx, topy, bottomx, bottomy, this);

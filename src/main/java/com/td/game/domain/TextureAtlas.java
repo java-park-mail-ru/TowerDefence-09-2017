@@ -34,14 +34,17 @@ public class TextureAtlas extends Resource {
         private Integer type;
         private String text;
         private String texture;
+        private List<List<String>> texturesPacks;
 
         @JsonCreator
         public DisplayInfo(@JsonProperty("type") Integer type,
                            @JsonProperty("text") String text,
-                           @JsonProperty("texture") String texture) {
+                           @JsonProperty("texture") String texture,
+                           @JsonProperty("texturesPacks") List<List<String>> texturesPacks) {
             this.type = type;
             this.text = text;
             this.texture = texture;
+            this.texturesPacks = texturesPacks;
         }
 
         public Integer getType() {
@@ -54,6 +57,10 @@ public class TextureAtlas extends Resource {
 
         public String getTexture() {
             return texture;
+        }
+
+        public List<List<String>> getTexturesPacks() {
+            return texturesPacks;
         }
     }
 }

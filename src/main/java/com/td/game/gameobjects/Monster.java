@@ -105,6 +105,7 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
         private double speed;
         private Point<Long> titleCoord;
         private Point<Double> relativeCoord;
+        private int direction;
 
         public Long getId() {
             return id;
@@ -134,10 +135,15 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
             this.titleCoord = monster.coord.getTitleCoord();
             this.relativeCoord = monster.relativeCoord;
             this.typeid = monster.typeid;
+            this.direction = Math.abs(2 * monster.vx) + monster.vx + Math.abs(monster.vy) + monster.vy;
         }
 
         public Integer getTypeid() {
             return typeid;
+        }
+
+        public int getDirection() {
+            return direction;
         }
     }
 
