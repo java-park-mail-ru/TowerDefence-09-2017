@@ -1,7 +1,7 @@
 {
   "class": "Monster$MonsterResource",
-  "hp": 100,
-  "speed": 5,
+  "hp": 200,
+  "speed": 2,
   "weight": 10,
   "reward": 1,
   "typeid": 1001

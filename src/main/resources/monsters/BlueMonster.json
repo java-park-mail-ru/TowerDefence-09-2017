@@ -1,6 +1,6 @@
 {
   "class": "Monster$MonsterResource",
-  "hp": 50,
+  "hp": 120,
   "speed": 3,
   "weight": 15,
   "reward": 1,
