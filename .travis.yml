@@ -4,6 +4,9 @@ jdk:
 branches:
   only:
   - dev
+cache:
+  directories:
+    - "$HOME/.m2/repository"
 env:
     - DB_URL=jdbc:postgresql://localhost:5432/travis_test DB_USER=tester DB_PASSWORD=travis_test
 
