@@ -10,16 +10,13 @@ env:
 services:
   - postgresql
 
-before_install:
+before_script:
   - psql -c "CREATE USER tester WITH SUPERUSER PASSWORD 'travis_test';" -U postgres
   - psql -c "CREATE DATABASE travis_test;" -U postgres
   - psql -c "GRANT ALL ON DATABASE travis_test TO tester;" -U postgres
 
-install:
-- mvn clean install
-
 script:
-- mvn verify
+- mvn clean verify
 
 deploy:
   provider: heroku
