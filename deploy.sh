@@ -2,7 +2,7 @@
 
 PORT=228
 DIST_PATH=./target
-DEPLOY_PATH=/home/td/td
+DEPLOY_PATH=/home/td/td-backend
 SERVER_IP=$1
 echo "Deploying to $SERVER_IP"
 
