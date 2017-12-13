@@ -29,5 +29,4 @@ deploy:
     - master
     - dev
 before_install:
-- openssl aes-256-cbc -K $encrypted_bd0a761beaf9_key -iv $encrypted_bd0a761beaf9_iv
-  -in server.enc -out ~\/.ssh/server -d
+- openssl aes-256-cbc -K $encrypted_bd0a761beaf9_key -iv $encrypted_bd0a761beaf9_iv -in server.enc -out $HOME/.ssh/server -d
