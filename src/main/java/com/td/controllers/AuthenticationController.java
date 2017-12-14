@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(path = "/auth")
+@RequestMapping(path = "/api/auth")
 public class AuthenticationController {
     private final ModelMapper modelMapper;
 
