@@ -35,7 +35,7 @@ public class UserController {
 
         Long userId = (Long) httpSession.getAttribute(Constants.USER_SESSION_KEY);
         if (userId == null) {
-            throw new AuthException("unauthorized", "/user", HttpStatus.UNAUTHORIZED);
+            throw new AuthException("unauthorized", "/api/user", HttpStatus.UNAUTHORIZED);
         }
         User user = userDao.getUserById(userId);
         return ResponseEntity
