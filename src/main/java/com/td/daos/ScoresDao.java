@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -23,11 +25,12 @@ public class ScoresDao implements IScoreDao {
     }
 
     @Override
-    public void addScores(User user, int scores) {
+    public Score addScores(User user, int scores) {
         Score score = new Score(scores);
         user.addScores(score);
         try {
             em.persist(score);
+            return score;
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException violation = (ConstraintViolationException) except.getCause();
@@ -36,4 +39,37 @@ public class ScoresDao implements IScoreDao {
             throw except;
         }
     }
+
+    @Override
+    public List<Score> getScoresList(Long infimum, int limit) {
+        Score bound = em.find(Score.class, infimum);
+        if (bound == null) {
+            return new ArrayList<>();
+        }
+        return em
+                .createQuery(
+                        "SELECT s "
+                                .concat("FROM Score s WHERE s.score < :threshold ")
+                                .concat("OR (s.score = :threshold AND s.id > :mark) ")
+                                .concat("ORDER BY s.score DESC, s.id ASC"),
+                        Score.class)
+                .setParameter("threshold", bound.getScore())
+                .setParameter("mark", infimum)
+                .setMaxResults(limit)
+                .getResultList();
+
+    }
+
+    @Override
+    public List<Score> getScoresList(int limit) {
+        return em.createQuery(
+                "SELECT s "
+                        .concat("FROM Score s ORDER BY s.score DESC, s.id ASC"),
+                Score.class)
+                .setMaxResults(limit)
+                .getResultList();
+
+    }
+
+
 }
