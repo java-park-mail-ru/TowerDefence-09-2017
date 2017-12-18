@@ -60,10 +60,14 @@ public class AppConfig {
 
         config.setAllowCredentials(true);
 
-        source.registerCorsConfiguration("/auth/*", config);
+        source.registerCorsConfiguration("/api/auth/*", config);
 
-        source.registerCorsConfiguration("/user", config);
-        source.registerCorsConfiguration("/user/*", config);
+        source.registerCorsConfiguration("/api/user", config);
+        source.registerCorsConfiguration("/api/user/*", config);
+
+        source.registerCorsConfiguration("/api/scores", config);
+        source.registerCorsConfiguration("/api/scores/*/page/*", config);
+
         return new CorsFilter(source);
     }
 

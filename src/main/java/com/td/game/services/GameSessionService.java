@@ -79,7 +79,7 @@ public class GameSessionService {
         List<Path> paths = new ArrayList<>();
         paths.add(path);
 
-        map.setPathTitles(path.getPathPoints());
+        map.setPathTiles(path.getPathPoints());
         Wave wave = waveService.generateWave(0, paths);
         List<Player> players = users.stream()
                 .map(user -> new Player(user.getId(), user.getProfile().getGameClass(), user.getNickname()))

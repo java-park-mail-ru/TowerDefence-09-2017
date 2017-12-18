@@ -22,7 +22,7 @@ public class GameManager {
     @NotNull
     private final Logger log = LoggerFactory.getLogger(GameManager.class);
 
-    //temoral hack for development
+
     private static final int GAME_LOBBY_SIZE = 2;
 
     @NotNull

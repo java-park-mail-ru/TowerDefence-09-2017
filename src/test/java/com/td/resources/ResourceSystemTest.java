@@ -31,7 +31,7 @@ public class ResourceSystemTest {
         GameMap.GameMapResource res = resourceFactory.loadResource("GameMap.json", GameMap.GameMapResource.class);
         GameMap map = new GameMap(res);
         assertNotNull(res);
-        assertEquals(map.getTitle(new Point<>(10L, 1L)).getTitleType(), new Long(0));
+        assertEquals(map.getTile(new Point<>(10L, 1L)).getTileType(), new Long(0));
     }
 
     @Test

@@ -144,8 +144,8 @@ public class GameTest {
             Tower tower = towers.get(0);
 
             assertSame(tower.getOwner(), firstPlayer);
-            assertEquals(tower.getTitlePosition(), new Point<>(0L, 2L));
-            assertSame(map.getTitle(tower.getTitlePosition()).getOwner(), tower);
+            assertEquals(tower.getTilePosition(), new Point<>(0L, 2L));
+            assertSame(map.getTile(tower.getTilePosition()).getOwner(), tower);
 
             //must NOT be placed
             TowerManager.TowerOrder secondPlayerOrder = new TowerManager.TowerOrder(0, 2, 101, secondPlayer.getId());
@@ -153,7 +153,7 @@ public class GameTest {
 
             assertSame(towers, session.getTowers());
             assertEquals(1, towers.size());
-            assertSame(map.getTitle(tower.getTitlePosition()).getOwner(), tower);
+            assertSame(map.getTile(tower.getTilePosition()).getOwner(), tower);
 
         }
     }
