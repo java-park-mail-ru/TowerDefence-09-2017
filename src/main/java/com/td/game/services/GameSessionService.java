@@ -3,6 +3,7 @@ package com.td.game.services;
 import com.td.daos.ScoresDao;
 import com.td.daos.UserDao;
 import com.td.domain.User;
+import com.td.game.GameContext;
 import com.td.game.GameSession;
 import com.td.game.domain.*;
 import com.td.game.gameobjects.Path;
@@ -15,16 +16,16 @@ import org.springframework.web.socket.CloseStatus;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class GameSessionService {
     @NotNull
     private final Map<Long, GameSession> usersSessions = new HashMap<>();
-
-    @NotNull
-    private final Set<GameSession> sessions = new HashSet<>();
 
     @NotNull
     private final TransportService transport;
@@ -48,6 +49,9 @@ public class GameSessionService {
     private final GameInitService gameInitService;
 
     @NotNull
+    private final GameContextService gameContextService;
+
+    @NotNull
     private List<GameParams> gameSessionsParams;
 
     public GameSessionService(@NotNull TransportService transport,
@@ -56,7 +60,8 @@ public class GameSessionService {
                               @NotNull MonsterWaveGenerator waveService,
                               @NotNull UserDao userDao,
                               @NotNull ScoresDao scoresDao,
-                              @NotNull GameInitService gameInitService) {
+                              @NotNull GameInitService gameInitService,
+                              @NotNull GameContextService gameContextService) {
         this.transport = transport;
         this.resourceFactory = resourceFactory;
         this.pathGenerator = pathGenerator;
@@ -64,6 +69,7 @@ public class GameSessionService {
         this.userDao = userDao;
         this.scoresDao = scoresDao;
         this.gameInitService = gameInitService;
+        this.gameContextService = gameContextService;
         this.gameSessionsParams = new ArrayList<>();
     }
 
@@ -72,7 +78,7 @@ public class GameSessionService {
         this.gameSessionsParams = resourceFactory.loadResourceList("gameParams/GameParamsList.json", GameParams.class);
     }
 
-    public void startGame(List<User> users) {
+    public void startGame(List<User> users, GameContext context) {
         GameMap map = new GameMap(resourceFactory.loadResource("GameMap.json", GameMap.GameMapResource.class));
 
         Path path = pathGenerator.generatePath();
@@ -99,9 +105,12 @@ public class GameSessionService {
                         ));
         GameParams sessionParams = gameSessionsParams.get(users.size() - 1);
         GameSession session = new GameSession(players, playersClasses, map, wave, paths, sessionParams);
-        gameInitService.initGameInSession(session);
-        sessions.add(session);
-        users.forEach(user -> usersSessions.put(user.getId(), session));
+        gameInitService.initGameInSession(session, context);
+        context.addSession(session);
+        users.forEach(user -> {
+            gameContextService.registerUserMapping(user.getId(), context);
+            usersSessions.put(user.getId(), session);
+        });
     }
 
     public boolean isPlaying(Long id) {
@@ -115,21 +124,23 @@ public class GameSessionService {
                 .allMatch(player -> transport.isConnected(player.getId()));
     }
 
-    public void terminateSession(@NotNull GameSession session, CloseStatus status) {
+    public void terminateSession(@NotNull GameSession session, CloseStatus status, GameContext context) {
         List<Player> players = session.getPlayers();
         for (Player player : players) {
             usersSessions.remove(player.getId());
+            gameContextService.unregisterUserMapping(player.getId());
             transport.closeSession(player.getId(), status);
         }
-        sessions.remove(session);
+        context.removeSession(session);
     }
 
 
-    public void finishGame(@NotNull GameSession session) {
+    public void finishGame(@NotNull GameSession session, GameContext context) {
         for (Player player : session.getPlayers()) {
             User user = userDao.getUserById(player.getId());
             scoresDao.addScores(user, player.getScores());
             usersSessions.remove(user.getId());
+            gameContextService.unregisterUserMapping(player.getId());
             try {
                 transport.sendMessageToUser(player.getId(), new GameFinishMessage(player.getScores()));
                 transport.closeSession(player.getId(), CloseStatus.NORMAL);
@@ -137,12 +148,7 @@ public class GameSessionService {
                 transport.closeSession(player.getId(), CloseStatus.SERVER_ERROR);
             }
         }
-        sessions.remove(session);
-    }
-
-
-    public Set<GameSession> getSessions() {
-        return sessions;
+        context.removeSession(session);
     }
 
     public GameSession getSessionForUser(Long playerId) {

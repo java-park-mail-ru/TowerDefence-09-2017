@@ -11,7 +11,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 
-@Service
 public class GameExecutor implements Runnable {
 
     private static final long STEP_TIME = 50;
@@ -19,18 +18,13 @@ public class GameExecutor implements Runnable {
 
     @NotNull
     private final GameManager gameManager;
+    private final GameContext context;
 
     private Clock clock = Clock.systemDefaultZone();
 
-    private Executor executor = Executors.newSingleThreadExecutor();
-
-    public GameExecutor(@NotNull GameManager gameManager) {
+    public GameExecutor(@NotNull GameManager gameManager, GameContext context) {
         this.gameManager = gameManager;
-    }
-
-    @PostConstruct
-    public void init() {
-        executor.execute(this);
+        this.context=  context;
     }
 
     @Override
@@ -40,9 +34,12 @@ public class GameExecutor implements Runnable {
 
     public void gameCycle() {
         long lastTickTime = STEP_TIME;
+        context.setTimeBuffer(STEP_TIME);
+
         while (true) {
             long before = clock.millis();
-            gameManager.gameStep(lastTickTime);
+            gameManager.gameStep(lastTickTime, context);
+
             long after = clock.millis();
 
             final long sleepingTime = Math.max(0, STEP_TIME - (after - before));
@@ -53,6 +50,9 @@ public class GameExecutor implements Runnable {
             }
             long afterSleep = clock.millis();
             lastTickTime += afterSleep - before;
+            if(afterSleep < before) {
+                logger.warn("LOL: {}, {}", afterSleep, before);
+            }
         }
     }
 }

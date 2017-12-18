@@ -1,6 +1,6 @@
 package com.td.game.services;
 
-import com.td.daos.UserDao;
+import com.td.game.GameContext;
 import com.td.game.GameSession;
 import com.td.game.domain.*;
 import com.td.game.resource.ResourceFactory;
@@ -9,6 +9,7 @@ import com.td.websocket.TransportService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,24 +22,27 @@ public class GameInitService {
     @NotNull
     private final ResourceFactory resourceFactory;
 
-    @NotNull
-    private final TextureAtlas textureAtlas;
+    private TextureAtlas textureAtlas;
 
     public GameInitService(@NotNull TransportService transportService,
-                           @NotNull UserDao userDao,
                            @NotNull ResourceFactory resourceFactory) {
         this.transport = transportService;
         this.resourceFactory = resourceFactory;
-        textureAtlas = resourceFactory.loadResource("TextureAtlas.json", TextureAtlas.class);
     }
 
-    public void initGameInSession(@NotNull GameSession session) {
+    @PostConstruct
+    public void initTextureAtlas() {
+        this.textureAtlas = resourceFactory.loadResource("TextureAtlas.json", TextureAtlas.class);
+    }
+
+    public void initGameInSession(@NotNull GameSession session, GameContext context) {
         List<Player.PlayerSnapshot> playerSnapshots = session.getPlayers()
                 .stream()
                 .map(Player::getSnapshot)
                 .collect(Collectors.toList());
 
         for (Player player : session.getPlayers()) {
+
             GameInitMessage message = createInitMessage(session, player, playerSnapshots);
             try {
                 transport.sendMessageToUser(player.getId(), message);
