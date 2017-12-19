@@ -132,4 +132,5 @@ public class GameSession {
     public List<ShotEvent> getShotEvents() {
         return shotEvents;
     }
+
 }

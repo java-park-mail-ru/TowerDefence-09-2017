@@ -3,12 +3,8 @@ package com.td.game;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.Clock;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 
 public class GameExecutor implements Runnable {
@@ -24,7 +20,7 @@ public class GameExecutor implements Runnable {
 
     public GameExecutor(@NotNull GameManager gameManager, GameContext context) {
         this.gameManager = gameManager;
-        this.context=  context;
+        this.context = context;
     }
 
     @Override
@@ -50,9 +46,6 @@ public class GameExecutor implements Runnable {
             }
             long afterSleep = clock.millis();
             lastTickTime += afterSleep - before;
-            if(afterSleep < before) {
-                logger.warn("LOL: {}, {}", afterSleep, before);
-            }
         }
     }
 }

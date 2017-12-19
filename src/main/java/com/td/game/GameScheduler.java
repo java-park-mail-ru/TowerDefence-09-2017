@@ -11,15 +11,16 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
 public class GameScheduler {
 
-    private final int CONCURRENCY_LEVEL = Runtime.getRuntime().availableProcessors();
+    private final int concurrencyLevel = Runtime.getRuntime().availableProcessors();
 
-    private final PriorityQueue<GameContext> gameContexts;
+    private final Queue<GameContext> gameContexts;
 
     private final ExecutorService executorService;
 
@@ -34,19 +35,22 @@ public class GameScheduler {
                          @NotNull GameManager gameManager) {
         this.gameContextService = gameContextService;
         this.gameManager = gameManager;
-        Comparator<GameContext> comp = Comparator
-                .comparingInt(GameContext::getSessionsSize)
-                .reversed()
-                .thenComparing(GameContext::getWaitersQueueLength)
-                .reversed();
+        Comparator<GameContext> comp = (lhs, rhs) -> {
+            int sc = Integer.compare(lhs.getSessionsSize(), rhs.getSessionsSize());
+            if (sc == 0) {
+                return Integer.compare(lhs.getWaitersQueueLength(), rhs.getWaitersQueueLength());
+            }
+            return sc;
+        };
+
         gameContexts = new PriorityQueue<>(comp);
-        executorService = Executors.newFixedThreadPool(CONCURRENCY_LEVEL);
+        executorService = Executors.newFixedThreadPool(concurrencyLevel);
     }
 
     @PostConstruct
     void runExecutors() {
-        logger.info("CONCURRENCY LEVEL: {}", CONCURRENCY_LEVEL);
-        for (int i = 0; i < CONCURRENCY_LEVEL; ++i) {
+        logger.info("Game executros number: {}", concurrencyLevel);
+        for (int i = 0; i < concurrencyLevel; ++i) {
             GameContext context = new GameContext();
             gameContexts.offer(context);
             executorService.submit(new GameExecutor(gameManager, context));
@@ -55,10 +59,9 @@ public class GameScheduler {
 
     public void addWaiter(Long id) {
         synchronized (gameContexts) {
-            logger.info("Waiter {} comes to queue", id);
+            logger.debug("Waiter {} comes to queue", id);
             GameContext context = gameContexts.poll();
             context.addWaiter(id);
-            logger.info("S: {}, W: {}", context.getSessions().size(), context.getWaiters().size());
             gameContexts.offer(context);
         }
     }
@@ -66,5 +69,9 @@ public class GameScheduler {
     public void addTowerOrder(long xcoord, long ycoord, Integer towerClass, Long playerId) {
         GameContext context = gameContextService.getContext(playerId);
         context.addTowerOrder(new TowerManager.TowerOrder(xcoord, ycoord, towerClass, playerId));
+    }
+
+    public Queue<GameContext> getGameContexts() {
+        return gameContexts;
     }
 }

@@ -50,7 +50,6 @@ public class GameManager {
                        @NotNull ServerSnaphotService serverSnaphotService,
                        @NotNull UserDao userDao,
                        @NotNull MonsterWaveProcessorService waveProcessor,
-
                        @NotNull TowerManager towerManager,
                        @NotNull TowerShootingService towerShootingService,
                        @NotNull TransportService transportService) {
@@ -76,9 +75,8 @@ public class GameManager {
                 }
             }
             if (matched.size() == GAME_LOBBY_SIZE) {
-                matched.forEach(user -> log.info("User {} in game", user.getId()));
                 gameSessionService.startGame(matched, context);
-                log.info("GameSession started in thread {}", Thread.currentThread().getId());
+                log.debug("GameSession started in thread {}", Thread.currentThread().getId());
             } else {
                 matched.forEach(user -> waiters.add(user.getId()));
                 break;
@@ -99,7 +97,7 @@ public class GameManager {
         Queue<TowerManager.TowerOrder> orders = context.getTowerOrders();
         TowerManager.TowerOrder order;
         while ((order = orders.poll()) != null) {
-            log.info("Order for player {} in process", order.getPlayerId());
+            log.debug("Order for player {} in process", order.getPlayerId());
             GameSession session = gameSessionService.getSessionForUser(order.getPlayerId());
             towerManager.processOrder(session, order);
         }
@@ -118,7 +116,7 @@ public class GameManager {
             waveProcessor.processWave(session, delta);
 
             if (session.isFinished()) {
-                log.trace("Session is finished, id: ", session.getId());
+                log.debug("Session is finished, id: ", session.getId());
                 finishedSessions.add(session);
             } else {
                 serverSnaphotService.sendServerSnapshot(session);

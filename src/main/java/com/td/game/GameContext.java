@@ -65,7 +65,8 @@ public class GameContext {
         return this.sessions.size();
     }
 
-    public int getWaitersQueueLength(){
+    public int getWaitersQueueLength() {
         return this.waiters.size();
     }
+
 }
