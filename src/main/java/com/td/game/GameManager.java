@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 @Service
 public class GameManager {
@@ -80,25 +80,25 @@ public class GameManager {
     }
 
     public void tryStartGameSession() {
-        List<User> matched = new ArrayList<>();
 
-        if (waiters.size() >= GAME_LOBBY_SIZE) {
-            for (int i = 0; i < GAME_LOBBY_SIZE; ++i) {
-                Long userId = waiters.poll();
-                User user = userDao.getUserById(userId);
-                if (transportService.isConnected(userId)) {
-                    matched.add(user);
-                }
+        if (waiters.size() < GAME_LOBBY_SIZE) {
+            return;
+        }
+        Set<User> matched = new HashSet<>();
+        while (waiters.size() > 0 && matched.size() < GAME_LOBBY_SIZE) {
+            Long userId = waiters.poll();
+            User user = userDao.getUserById(userId);
+            if (transportService.isConnected(user.getId())) {
+                matched.add(user);
             }
         }
-        matched = matched.stream().distinct().collect(Collectors.toList());
-
-        if (matched.size() == GAME_LOBBY_SIZE) {
-            matched.forEach(user -> log.trace("User {} in game", user.getId()));
-            gameSessionService.startGame(matched);
+        if (matched.size() == GAME_LOBBY_SIZE && gameSessionService.startGame(matched)) {
+            log.trace("GameSession started in thread {}", Thread.currentThread().getId());
         } else {
+            log.warn("Fail on start game session, thread {}", Thread.currentThread().getId());
             matched.forEach(user -> waiters.add(user.getId()));
         }
+
     }
 
     public void gameStep(long time) {

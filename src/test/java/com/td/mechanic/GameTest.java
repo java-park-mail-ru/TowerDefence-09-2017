@@ -19,10 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -53,7 +50,7 @@ public class GameTest {
     public void initialize() {
         User us1 = dao.createUser("us1", "us1@mail.ru", "uuuuu", "Adventurer");
         User us2 = dao.createUser("us2", "us2@mail.ru", "uuuuu", "Adventurer");
-        List<User> users = new ArrayList<>();
+        Set<User> users = new HashSet<>();
         users.add(us1);
         users.add(us2);
         gameSessionService.startGame(users);

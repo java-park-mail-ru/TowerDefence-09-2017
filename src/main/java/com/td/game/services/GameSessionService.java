@@ -10,6 +10,8 @@ import com.td.game.resource.ResourceFactory;
 import com.td.game.snapshots.GameFinishMessage;
 import com.td.websocket.TransportService;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class GameSessionService {
+    private final Logger logger = LoggerFactory.getLogger(GameSessionService.class);
+
     @NotNull
     private final Map<Long, GameSession> usersSessions = new HashMap<>();
 
@@ -68,11 +72,15 @@ public class GameSessionService {
     }
 
     @PostConstruct
-    public void init() {
+    public void initGameParams() {
         this.gameSessionsParams = resourceFactory.loadResourceList("gameParams/GameParamsList.json", GameParams.class);
     }
 
-    public void startGame(List<User> users) {
+    public boolean startGame(Set<User> users) {
+        if (users.stream().anyMatch(user -> isPlaying(user.getId()))) {
+            return false;
+        }
+
         GameMap map = new GameMap(resourceFactory.loadResource("GameMap.json", GameMap.GameMapResource.class));
 
         Path path = pathGenerator.generatePath();
@@ -97,11 +105,19 @@ public class GameSessionService {
                         .toMap(User::getId,
                                 user -> availableClasses.get(user.getProfile().getGameClass())
                         ));
+
         GameParams sessionParams = gameSessionsParams.get(users.size() - 1);
         GameSession session = new GameSession(players, playersClasses, map, wave, paths, sessionParams);
-        gameInitService.initGameInSession(session);
-        sessions.add(session);
+
+        try {
+            gameInitService.initGameInSession(session);
+        } catch (SnapshotSendingException exception) {
+            logger.error("Unable to send initial snapshot: {}", exception);
+            return false;
+        }
         users.forEach(user -> usersSessions.put(user.getId(), session));
+        sessions.add(session);
+        return true;
     }
 
     public boolean isPlaying(Long id) {
@@ -141,6 +157,7 @@ public class GameSessionService {
     }
 
 
+    @NotNull
     public Set<GameSession> getSessions() {
         return sessions;
     }
