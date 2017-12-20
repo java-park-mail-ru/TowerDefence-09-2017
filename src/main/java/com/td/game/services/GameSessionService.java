@@ -9,6 +9,8 @@ import com.td.game.domain.Player;
 import com.td.game.snapshots.GameFinishMessage;
 import com.td.websocket.TransportService;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
@@ -19,6 +21,7 @@ import java.util.Map;
 
 @Service
 public class GameSessionService {
+    private final Logger logger = LoggerFactory.getLogger(GameSessionService.class);
     @NotNull
     private final Map<Long, GameSession> usersSessions = new HashMap<>();
 
@@ -51,15 +54,32 @@ public class GameSessionService {
     }
 
 
-    public void startGame(List<User> users, GameContext context) {
-
+    public boolean startGame(List<User> users, GameContext context) {
         GameSession session = gameInitService.createGameSession(users);
-        gameInitService.initGameInSession(session, context);
+        synchronized (usersSessions) {
+            if (users.stream().anyMatch(user -> isPlaying(user.getId()))) {
+                return false;
+            }
+            users.forEach(user -> {
+                usersSessions.put(user.getId(), session);
+                gameContextService.registerUserMapping(user.getId(), context);
+            });
+        }
+
         context.addSession(session);
-        users.forEach(user -> {
-            gameContextService.registerUserMapping(user.getId(), context);
-            usersSessions.put(user.getId(), session);
-        });
+        try {
+            gameInitService.initGameInSession(session);
+        } catch (SnapshotSendingException exception) {
+            logger.error("Unable to send initial snapshot: {}", exception);
+            synchronized (usersSessions) {
+                users.forEach(user -> {
+                    usersSessions.remove(user.getId());
+                    gameContextService.unregisterUserMapping(user.getId());
+                });
+            }
+            return false;
+        }
+        return true;
     }
 
     public boolean isPlaying(Long id) {

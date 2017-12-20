@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.StampedLock;
 
 import static org.junit.Assert.*;
 
@@ -54,7 +55,7 @@ public class GameTest {
 
     @Before
     public void initialize() {
-        context = new GameContext();
+        context = new GameContext(new StampedLock());
         User us1 = dao.createUser("us1", "us1@mail.ru", "uuuuu", "Adventurer");
         User us2 = dao.createUser("us2", "us2@mail.ru", "uuuuu", "Adventurer");
         List<User> users = new ArrayList<>();

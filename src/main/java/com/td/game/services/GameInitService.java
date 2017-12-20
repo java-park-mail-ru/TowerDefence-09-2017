@@ -1,7 +1,6 @@
 package com.td.game.services;
 
 import com.td.domain.User;
-import com.td.game.GameContext;
 import com.td.game.GameSession;
 import com.td.game.domain.*;
 import com.td.game.gameobjects.Path;
@@ -54,14 +53,13 @@ public class GameInitService {
 
     }
 
-    public void initGameInSession(@NotNull GameSession session, GameContext context) {
+    public void initGameInSession(@NotNull GameSession session) {
         List<Player.PlayerSnapshot> playerSnapshots = session.getPlayers()
                 .stream()
                 .map(Player::getSnapshot)
                 .collect(Collectors.toList());
 
         for (Player player : session.getPlayers()) {
-
             GameInitMessage message = createInitMessage(session, player, playerSnapshots);
             try {
                 transport.sendMessageToUser(player.getId(), message);

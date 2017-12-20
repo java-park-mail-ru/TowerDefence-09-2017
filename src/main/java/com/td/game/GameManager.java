@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class GameManager {
@@ -22,7 +19,7 @@ public class GameManager {
     private final Logger log = LoggerFactory.getLogger(GameManager.class);
 
 
-    private static final int GAME_LOBBY_SIZE = 1;
+    private static final int GAME_LOBBY_SIZE = 2;
 
     @NotNull
     private final GameSessionService gameSessionService;
@@ -51,8 +48,8 @@ public class GameManager {
                        @NotNull UserDao userDao,
                        @NotNull MonsterWaveProcessorService waveProcessor,
                        @NotNull TowerManager towerManager,
-                       @NotNull TowerShootingService towerShootingService,
-                       @NotNull TransportService transportService) {
+                       @NotNull TransportService transportService,
+                       @NotNull TowerShootingService towerShootingService) {
         this.gameSessionService = gameSessionService;
         this.serverSnaphotService = serverSnaphotService;
         this.userDao = userDao;
@@ -63,27 +60,36 @@ public class GameManager {
     }
 
     public void tryStartGameSession(GameContext context) {
-        List<User> matched = new ArrayList<>();
-        Queue<Long> waiters = context.getWaiters();
+        long stamp = context.lockQueue();
+        try {
+            Queue<Long> waiters = context.getWaiters();
+            if (waiters.size() < GAME_LOBBY_SIZE) {
+                return;
+            }
 
-        while (waiters.size() >= GAME_LOBBY_SIZE) {
-            for (int i = 0; i < GAME_LOBBY_SIZE; ++i) {
+            Set<User> matched = new HashSet<>();
+            while (waiters.size() > 0 && matched.size() < GAME_LOBBY_SIZE) {
                 Long userId = waiters.poll();
+
                 User user = userDao.getUserById(userId);
-                if (transportService.isConnected(userId)) {
+                if (transportService.isConnected(user.getId())) {
                     matched.add(user);
                 }
             }
-            if (matched.size() == GAME_LOBBY_SIZE) {
-                gameSessionService.startGame(matched, context);
-                log.debug("GameSession started in thread {}", Thread.currentThread().getId());
+
+            if (gameSessionService.startGame(new ArrayList<>(matched), context)) {
+                log.trace("GameSession started in thread {}", Thread.currentThread().getId());
             } else {
-                matched.forEach(user -> waiters.add(user.getId()));
-                break;
+                log.warn("Fail on start game session, thread {}", Thread.currentThread().getId());
+                matched.forEach(user -> context.getWaiters().add(user.getId()));
             }
 
+        } catch (Exception e) {
+            log.error("Exception on game start : {}", e);
+            context.clearWaitersQueue();
+        } finally {
+            context.unlockQueue(stamp);
         }
-
     }
 
     public void gameStep(long time, GameContext context) {
@@ -126,4 +132,5 @@ public class GameManager {
         invalidSessions.forEach(session -> gameSessionService.terminateSession(session, CloseStatus.SERVER_ERROR, context));
         finishedSessions.forEach(session -> gameSessionService.finishGame(session, context));
     }
+
 }

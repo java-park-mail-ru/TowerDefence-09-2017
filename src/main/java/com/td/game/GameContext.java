@@ -7,16 +7,19 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.StampedLock;
 
 public class GameContext {
 
     private final Set<GameSession> sessions;
     private final Queue<Long> waiters;
     private final Queue<TowerManager.TowerOrder> towerOrders;
+    private final StampedLock queueLock;
     private long timeBuffer;
 
 
-    public GameContext() {
+    public GameContext(StampedLock queueLock) {
+        this.queueLock = queueLock;
         this.towerOrders = new ConcurrentLinkedQueue<>();
         this.sessions = new HashSet<>();
         this.waiters = new ConcurrentLinkedQueue<>();
@@ -69,4 +72,20 @@ public class GameContext {
         return this.waiters.size();
     }
 
+    public long lockQueue() {
+        return queueLock.readLock();
+    }
+
+    public void unlockQueue(long stamp) {
+        queueLock.unlockRead(stamp);
+    }
+
+    public void clearWaitersQueue() {
+        long stamp = queueLock.writeLock();
+        try {
+            waiters.clear();
+        } finally {
+            queueLock.unlockWrite(stamp);
+        }
+    }
 }
