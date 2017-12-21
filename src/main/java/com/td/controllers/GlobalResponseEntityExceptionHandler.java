@@ -28,12 +28,12 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
     @JsonView(ErrorViews.AuthorizationError.class)
     protected ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
         log.error("Authentication error: {} ", ex.getError(), ex);
-
         ErrorMessage message = ErrorMessage
                 .builder()
                 .setType(ErrorTypes.AUTHORIZATION_ERROR)
                 .setAuthorizationErrors(ex.getError())
                 .build();
+
         return handleExceptionInternal(ex, message,
                 new HttpHeaders(), ex.getStatus(), request);
     }
