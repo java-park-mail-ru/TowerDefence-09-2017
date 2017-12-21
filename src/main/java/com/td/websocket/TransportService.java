@@ -1,6 +1,7 @@
 package com.td.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.td.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,10 @@ public class TransportService {
 
     public boolean isConnected(Long id) {
         return sessions.containsKey(id) && sessions.get(id).isOpen();
+    }
+
+    public boolean isConnected(User user) {
+        return isConnected(user.getId());
     }
 
     public void flushSession(Long id) {

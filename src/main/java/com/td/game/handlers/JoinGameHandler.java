@@ -1,6 +1,6 @@
 package com.td.game.handlers;
 
-import com.td.game.GameManager;
+import com.td.game.GameScheduler;
 import com.td.game.snapshots.JoinGameMessage;
 import com.td.websocket.MessageHandler;
 import com.td.websocket.MessageHandlersContainer;
@@ -16,13 +16,13 @@ public class JoinGameHandler extends MessageHandler<JoinGameMessage> {
     private final MessageHandlersContainer messageHandlerContainer;
 
     @NotNull
-    private final GameManager gameManager;
+    private final GameScheduler gameScheduler;
 
     public JoinGameHandler(@NotNull MessageHandlersContainer messageHandlerContainer,
-                           @NotNull GameManager gameManager) {
+                           @NotNull GameScheduler gameScheduler) {
         super(JoinGameMessage.class);
         this.messageHandlerContainer = messageHandlerContainer;
-        this.gameManager = gameManager;
+        this.gameScheduler = gameScheduler;
     }
 
     @PostConstruct
@@ -32,6 +32,6 @@ public class JoinGameHandler extends MessageHandler<JoinGameMessage> {
 
     @Override
     public void handle(JoinGameMessage message, Long id) {
-        gameManager.addUser(id);
+        gameScheduler.addWaiter(id);
     }
 }

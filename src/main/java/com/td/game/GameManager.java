@@ -10,11 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 
 @Service
 public class GameManager {
@@ -32,18 +28,10 @@ public class GameManager {
     private final ServerSnaphotService serverSnaphotService;
 
     @NotNull
-    private final ConcurrentLinkedQueue<Long> waiters = new ConcurrentLinkedQueue<>();
-
-    @NotNull
-    private final ConcurrentLinkedQueue<TowerManager.TowerOrder> towerOrders = new ConcurrentLinkedQueue<>();
-
-    @NotNull
     private final UserDao userDao;
 
     @NotNull
     private final MonsterWaveProcessorService waveProcessor;
-
-    private long timeBuffer = 0L;
 
     @NotNull
     private final TowerManager towerManager;
@@ -59,10 +47,9 @@ public class GameManager {
                        @NotNull ServerSnaphotService serverSnaphotService,
                        @NotNull UserDao userDao,
                        @NotNull MonsterWaveProcessorService waveProcessor,
-
                        @NotNull TowerManager towerManager,
-                       @NotNull TowerShootingService towerShootingService,
-                       @NotNull TransportService transportService) {
+                       @NotNull TransportService transportService,
+                       @NotNull TowerShootingService towerShootingService) {
         this.gameSessionService = gameSessionService;
         this.serverSnaphotService = serverSnaphotService;
         this.userDao = userDao;
@@ -72,52 +59,58 @@ public class GameManager {
         this.transportService = transportService;
     }
 
-    public void addUser(Long id) {
-        if (gameSessionService.isPlaying(id)) {
-            return;
-        }
-        waiters.offer(id);
-    }
-
-    public void tryStartGameSession() {
-
-        if (waiters.size() < GAME_LOBBY_SIZE) {
-            return;
-        }
-        Set<User> matched = new HashSet<>();
-        while (waiters.size() > 0 && matched.size() < GAME_LOBBY_SIZE) {
-            Long userId = waiters.poll();
-            User user = userDao.getUserById(userId);
-            if (transportService.isConnected(user.getId())) {
-                matched.add(user);
+    public void tryStartGameSession(GameContext context) {
+        long stamp = context.lockQueue();
+        try {
+            Queue<Long> waiters = context.getWaiters();
+            if (waiters.size() < GAME_LOBBY_SIZE) {
+                return;
             }
-        }
-        if (matched.size() == GAME_LOBBY_SIZE && gameSessionService.startGame(matched)) {
-            log.trace("GameSession started in thread {}", Thread.currentThread().getId());
-        } else {
-            log.warn("Fail on start game session, thread {}", Thread.currentThread().getId());
-            matched.forEach(user -> waiters.add(user.getId()));
-        }
 
+            Set<User> matched = new HashSet<>();
+            while (waiters.size() > 0 && matched.size() < GAME_LOBBY_SIZE) {
+                Long userId = waiters.poll();
+
+                User user = userDao.getUserById(userId);
+                if (transportService.isConnected(user.getId())) {
+                    matched.add(user);
+                }
+            }
+
+            if (gameSessionService.startGame(new ArrayList<>(matched), context)) {
+                log.trace("GameSession started in thread {}", Thread.currentThread().getId());
+            } else {
+                log.warn("Fail on start game session, thread {}", Thread.currentThread().getId());
+                matched.forEach(user -> context.getWaiters().add(user.getId()));
+            }
+
+        } catch (Exception e) {
+            log.error("Exception on game start : {}", e);
+            context.clearWaitersQueue();
+        } finally {
+            context.unlockQueue(stamp);
+        }
     }
 
-    public void gameStep(long time) {
-        tryStartGameSession();
-        Set<GameSession> sessions = gameSessionService.getSessions();
+    public void gameStep(long time, GameContext context) {
+        tryStartGameSession(context);
+        Set<GameSession> sessions = context.getSessions();
         List<GameSession> invalidSessions = new ArrayList<>();
         List<GameSession> finishedSessions = new ArrayList<>();
-        long delta = time - timeBuffer;
-        timeBuffer = time;
+
+        long delta = context.updateTimeBuffer(time);
+
+        Queue<TowerManager.TowerOrder> orders = context.getTowerOrders();
         TowerManager.TowerOrder order;
-        while ((order = towerOrders.poll()) != null) {
-            log.trace("Order for player {} in process", order.getPlayerId());
+        while ((order = orders.poll()) != null) {
+            log.debug("Order for player {} in process", order.getPlayerId());
             GameSession session = gameSessionService.getSessionForUser(order.getPlayerId());
             towerManager.processOrder(session, order);
         }
 
         for (GameSession session : sessions) {
             if (!gameSessionService.isValidSession(session)) {
-                log.warn("Session is invalid, id: ", session.getId());
+                log.info("Session is invalid, id: ", session.getId());
                 invalidSessions.add(session);
                 continue;
             }
@@ -129,19 +122,15 @@ public class GameManager {
             waveProcessor.processWave(session, delta);
 
             if (session.isFinished()) {
-                log.trace("Session is finished, id: ", session.getId());
+                log.debug("Session is finished, id: ", session.getId());
                 finishedSessions.add(session);
             } else {
                 serverSnaphotService.sendServerSnapshot(session);
             }
         }
 
-        invalidSessions.forEach(session -> gameSessionService.terminateSession(session, CloseStatus.SERVER_ERROR));
-        finishedSessions.forEach(gameSessionService::finishGame);
-    }
-
-    public void addTowerOrders(Integer orderedTowerTypeId, long xcoord, long ycoord, Long id) {
-        towerOrders.offer(new TowerManager.TowerOrder(xcoord, ycoord, orderedTowerTypeId, id));
+        invalidSessions.forEach(session -> gameSessionService.terminateSession(session, CloseStatus.SERVER_ERROR, context));
+        finishedSessions.forEach(session -> gameSessionService.finishGame(session, context));
     }
 
 }

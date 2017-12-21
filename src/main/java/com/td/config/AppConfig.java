@@ -66,6 +66,8 @@ public class AppConfig {
         source.registerCorsConfiguration("/api/user/*", config);
 
         source.registerCorsConfiguration("/api/scores", config);
+
+        source.registerCorsConfiguration("/api/scores/page/*", config);
         source.registerCorsConfiguration("/api/scores/*/page/*", config);
 
         return new CorsFilter(source);

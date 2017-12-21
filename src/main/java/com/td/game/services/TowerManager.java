@@ -85,5 +85,6 @@ public class TowerManager {
         public long getYcoord() {
             return ycoord;
         }
+
     }
 }

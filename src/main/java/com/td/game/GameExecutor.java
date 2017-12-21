@@ -3,15 +3,10 @@ package com.td.game;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.Clock;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 
-@Service
 public class GameExecutor implements Runnable {
 
     private static final long STEP_TIME = 50;
@@ -19,18 +14,13 @@ public class GameExecutor implements Runnable {
 
     @NotNull
     private final GameManager gameManager;
+    private final GameContext context;
 
     private Clock clock = Clock.systemDefaultZone();
 
-    private Executor executor = Executors.newSingleThreadExecutor();
-
-    public GameExecutor(@NotNull GameManager gameManager) {
+    public GameExecutor(@NotNull GameManager gameManager, GameContext context) {
         this.gameManager = gameManager;
-    }
-
-    @PostConstruct
-    public void init() {
-        executor.execute(this);
+        this.context = context;
     }
 
     @Override
@@ -40,9 +30,12 @@ public class GameExecutor implements Runnable {
 
     public void gameCycle() {
         long lastTickTime = STEP_TIME;
+        context.setTimeBuffer(STEP_TIME);
+
         while (true) {
             long before = clock.millis();
-            gameManager.gameStep(lastTickTime);
+            gameManager.gameStep(lastTickTime, context);
+
             long after = clock.millis();
 
             final long sleepingTime = Math.max(0, STEP_TIME - (after - before));
