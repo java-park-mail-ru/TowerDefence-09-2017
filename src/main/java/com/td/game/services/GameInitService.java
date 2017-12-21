@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,7 +89,7 @@ public class GameInitService {
 
     }
 
-    @NotNull GameSession createGameSession(List<User> users) {
+    @NotNull GameSession createGameSession(Set<User> users) {
         GameMap map = new GameMap(resourceFactory.loadResource("GameMap.json", GameMap.GameMapResource.class));
 
         Path path = pathGenerator.generatePath();

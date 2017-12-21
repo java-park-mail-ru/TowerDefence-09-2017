@@ -77,7 +77,7 @@ public class GameManager {
                 }
             }
 
-            if (gameSessionService.startGame(new ArrayList<>(matched), context)) {
+            if (matched.size() == GAME_LOBBY_SIZE && gameSessionService.startGame(matched, context)) {
                 log.trace("GameSession started in thread {}", Thread.currentThread().getId());
             } else {
                 log.warn("Fail on start game session, thread {}", Thread.currentThread().getId());
@@ -110,7 +110,7 @@ public class GameManager {
 
         for (GameSession session : sessions) {
             if (!gameSessionService.isValidSession(session)) {
-                log.info("Session is invalid, id: ", session.getId());
+                log.warn("Session is invalid, id: ", session.getId());
                 invalidSessions.add(session);
                 continue;
             }
@@ -122,7 +122,7 @@ public class GameManager {
             waveProcessor.processWave(session, delta);
 
             if (session.isFinished()) {
-                log.debug("Session is finished, id: ", session.getId());
+                log.trace("Session is finished, id: ", session.getId());
                 finishedSessions.add(session);
             } else {
                 serverSnaphotService.sendServerSnapshot(session);

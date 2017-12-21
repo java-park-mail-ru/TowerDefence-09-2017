@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class GameSessionService {
@@ -54,7 +55,7 @@ public class GameSessionService {
     }
 
 
-    public boolean startGame(List<User> users, GameContext context) {
+    public boolean startGame(Set<User> users, GameContext context) {
         GameSession session = gameInitService.createGameSession(users);
         synchronized (usersSessions) {
             if (users.stream().anyMatch(user -> isPlaying(user.getId()))) {
