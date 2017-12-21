@@ -7,6 +7,7 @@ import com.td.daos.inerfaces.IUserDao;
 import com.td.domain.GameProfile;
 import com.td.domain.User;
 import org.hibernate.exception.ConstraintViolationException;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,7 +209,7 @@ public class UserDao implements IUserDao {
     }
 
 
-    private void removeUserByParams(Long id, String email, String nickname) {
+    private void removeUserByParams(@Nullable Long id, @Nullable String email, @Nullable String nickname) {
         try {
             if (id != null) {
                 em.remove(em.getReference(User.class, id));

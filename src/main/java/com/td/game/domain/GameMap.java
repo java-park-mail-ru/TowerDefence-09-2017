@@ -13,23 +13,23 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class GameMap implements Snapshotable<GameMap> {
-    private Map<Point<Long>, Title> gameMap;
+    private Map<Point<Long>, Tile> gameMap;
     private final long height;
     private final long width;
 
     public GameMap(GameMapResource resource) {
         this.width = resource.width;
         this.height = resource.height;
-        this.gameMap = resource.titles
+        this.gameMap = resource.tiles
                 .stream()
-                .collect(Collectors.toMap(Title::getTitleCoord, Function.identity()));
+                .collect(Collectors.toMap(Tile::getTileCoord, Function.identity()));
     }
 
-    public void setPathTitles(List<PathPoint> path) {
+    public void setPathTiles(List<PathPoint> path) {
         for (PathPoint point : path) {
-            Title title = point.getTitle();
-            gameMap.compute(title.getTitleCoord(), (coord, current) -> {
-                current.setTitleType(title.getTitleType());
+            Tile tile = point.getTile();
+            gameMap.compute(tile.getTileCoord(), (coord, current) -> {
+                current.setTileType(tile.getTileType());
                 return current;
             });
         }
@@ -37,7 +37,7 @@ public class GameMap implements Snapshotable<GameMap> {
     }
 
 
-    public Title getTitle(Point<Long> coords) {
+    public Tile getTile(Point<Long> coords) {
         return gameMap.get(coords);
     }
 
@@ -54,17 +54,17 @@ public class GameMap implements Snapshotable<GameMap> {
         return new GameMapSnapshot(this);
     }
 
-    public boolean isTitleFree(long xcoord, long ycoord) {
-        Title title = gameMap.get(new Point<>(xcoord, ycoord));
-        return title != null && title.getOwner() == null;
+    public boolean isTileFree(long xcoord, long ycoord) {
+        Tile tile = gameMap.get(new Point<>(xcoord, ycoord));
+        return tile != null && tile.getOwner() == null;
     }
 
     public boolean placeObject(Point<Long> coord, GameObject obj) {
-        Title title = gameMap.get(coord);
-        if (title == null || title.getOwner() != null) {
+        Tile tile = gameMap.get(coord);
+        if (tile == null || tile.getOwner() != null) {
             return false;
         }
-        title.setOwner(obj);
+        tile.setOwner(obj);
         return true;
     }
 
@@ -74,7 +74,7 @@ public class GameMap implements Snapshotable<GameMap> {
 
 
     public class GameMapSnapshot implements Snapshot<GameMap> {
-        private List<Title.TitleSnapshot> gameMap;
+        private List<Tile.TileSnapshot> gameMap;
         private long height;
         private long width;
 
@@ -82,14 +82,14 @@ public class GameMap implements Snapshotable<GameMap> {
             this.gameMap = map.gameMap
                     .values()
                     .stream()
-                    .map(Title::getSnapshot)
+                    .map(Tile::getSnapshot)
                     .collect(Collectors.toList());
 
             this.height = map.height;
             this.width = map.width;
         }
 
-        public List<Title.TitleSnapshot> getGameMap() {
+        public List<Tile.TileSnapshot> getGameMap() {
             return gameMap;
         }
 
@@ -103,15 +103,15 @@ public class GameMap implements Snapshotable<GameMap> {
     }
 
     public static class GameMapResource extends Resource {
-        private List<Title> titles;
+        private List<Tile> tiles;
         private long height;
         private long width;
 
         @JsonCreator
-        public GameMapResource(@JsonProperty("titles") List<Title> titles,
+        public GameMapResource(@JsonProperty("tiles") List<Tile> tiles,
                                @JsonProperty("height") long height,
                                @JsonProperty("width") long width) {
-            this.titles = titles;
+            this.tiles = tiles;
             this.height = height;
             this.width = width;
         }

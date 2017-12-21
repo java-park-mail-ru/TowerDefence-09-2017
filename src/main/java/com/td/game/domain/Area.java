@@ -45,7 +45,7 @@ public class Area {
     }
 
     public boolean checkCollision(Monster obj) {
-        Point<Long> topCoord = obj.getCoord().getTitleCoord();
+        Point<Long> topCoord = obj.getCoord().getTileCoord();
         Point<Long> botCoord = new Point<>(topCoord.getXcoord() + 1, topCoord.getYcoord() + 1);
         return isUnderTopPoint(topCoord) || isOverBotPoint(botCoord);
     }

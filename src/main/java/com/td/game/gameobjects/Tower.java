@@ -25,7 +25,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
     private Player owner;
 
     private Integer typeid;
-    private Point<Long> titlePosition;
+    private Point<Long> tilePosition;
 
     public Tower(TowerResource resource, Player owner) {
         super();
@@ -35,7 +35,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         this.range = resource.range;
         this.cost = resource.cost;
         this.typeid = resource.typeid;
-        this.titlePosition = new Point<>(0L, 0L);
+        this.tilePosition = new Point<>(0L, 0L);
         this.ready = true;
         this.msSinceLastShot = resource.period;
     }
@@ -55,8 +55,8 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         }
     }
 
-    public void setTitlePosition(long xc, long yc) {
-        this.titlePosition = new Point<>(xc, yc);
+    public void setTilePosition(long xc, long yc) {
+        this.tilePosition = new Point<>(xc, yc);
     }
 
     public boolean isReady() {
@@ -103,10 +103,10 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
 
     public Area getRangeArea() {
         if (rangeArea == null) {
-            Long topx = Math.max(0, titlePosition.getXcoord() - range);
-            Long topy = Math.max(0, titlePosition.getYcoord() - range);
-            Long bottomx = titlePosition.getXcoord() + range + 1;
-            Long bottomy = titlePosition.getYcoord() + range + 1;
+            Long topx = Math.max(0, tilePosition.getXcoord() - range);
+            Long topy = Math.max(0, tilePosition.getYcoord() - range);
+            Long bottomx = tilePosition.getXcoord() + range + 1;
+            Long bottomy = tilePosition.getYcoord() + range + 1;
             this.rangeArea = new Area(topx, topy, bottomx, bottomy, this);
         }
         return rangeArea;
@@ -127,7 +127,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         private int range;
         private int cost;
         private int typeid;
-        private Point<Long> titlePosition;
+        private Point<Long> tilePosition;
 
         public TowerSnapshot(Tower tower) {
             this.id = tower.getId();
@@ -136,7 +136,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
             this.range = tower.range;
             this.cost = tower.cost;
             this.typeid = tower.typeid;
-            this.titlePosition = tower.titlePosition;
+            this.tilePosition = tower.tilePosition;
         }
 
         public int getDamage() {
@@ -155,8 +155,8 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
             return cost;
         }
 
-        public Point<Long> getTitlePosition() {
-            return titlePosition;
+        public Point<Long> getTilePosition() {
+            return tilePosition;
         }
 
         public int getTypeid() {
@@ -213,7 +213,7 @@ public class Tower extends GameObject implements Snapshotable<Tower> {
         this.period = period;
     }
 
-    public Point<Long> getTitlePosition() {
-        return titlePosition;
+    public Point<Long> getTilePosition() {
+        return tilePosition;
     }
 }

@@ -6,31 +6,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PathPoint {
 
     private Point<Integer> directions;
-    private Title title;
+    private Tile tile;
     private Integer index;
 
     @JsonCreator
     public PathPoint(@JsonProperty("x") long xcoord,
                      @JsonProperty("y") long ycoord,
-                     @JsonProperty("titleType") long titleType,
+                     @JsonProperty("tileType") long tileType,
                      @JsonProperty("vx") int vx,
                      @JsonProperty("vy") int vy,
                      @JsonProperty("index") Integer index) {
         this.index = index;
         this.directions = new Point<>(vx, vy);
-        this.title = new Title(xcoord, ycoord, titleType);
+        this.tile = new Tile(xcoord, ycoord, tileType);
     }
 
     public Point<Integer> getDirections() {
         return directions;
     }
 
-    public Title getTitle() {
-        return title;
+    public Tile getTile() {
+        return tile;
     }
 
-    public Point<Long> getTitleCoord() {
-        return title.getTitleCoord();
+    public Point<Long> getTileCoord() {
+        return tile.getTileCoord();
     }
 
     @Override
@@ -44,12 +44,12 @@ public class PathPoint {
 
         PathPoint pathPoint = (PathPoint) obj;
 
-        return title != null ? title.equals(pathPoint.title) : pathPoint.title == null;
+        return tile != null ? tile.equals(pathPoint.tile) : pathPoint.tile == null;
     }
 
     @Override
     public int hashCode() {
-        return title != null ? title.hashCode() : 0;
+        return tile != null ? tile.hashCode() : 0;
     }
 
     public Integer getIndex() {

@@ -103,7 +103,7 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
         private Integer typeid;
         private int hp;
         private double speed;
-        private Point<Long> titleCoord;
+        private Point<Long> tileCoord;
         private Point<Double> relativeCoord;
         private int direction;
 
@@ -119,8 +119,8 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
             return speed;
         }
 
-        public Point<Long> getTitleCoord() {
-            return titleCoord;
+        public Point<Long> getTileCoord() {
+            return tileCoord;
         }
 
         public Point<Double> getRelativeCoord() {
@@ -132,7 +132,7 @@ public class Monster extends GameObject implements Snapshotable<Monster> {
             this.id = monster.getId();
             this.hp = monster.getHp();
             this.speed = monster.speed * timeScale;
-            this.titleCoord = monster.coord.getTitleCoord();
+            this.tileCoord = monster.coord.getTileCoord();
             this.relativeCoord = monster.relativeCoord;
             this.typeid = monster.typeid;
             this.direction = Math.abs(2 * monster.vx) + monster.vx + Math.abs(monster.vy) + monster.vy;

@@ -44,9 +44,9 @@ public class TowerManager {
 
             GameMap map = session.getGameMap();
 
-            if (player != null && player.getMoney() >= resource.getCost() && map.isTitleFree(order.xcoord, order.ycoord)) {
+            if (player != null && player.getMoney() >= resource.getCost() && map.isTileFree(order.xcoord, order.ycoord)) {
                 Tower tower = new Tower(resource, player);
-                tower.setTitlePosition(order.xcoord, order.ycoord);
+                tower.setTilePosition(order.xcoord, order.ycoord);
                 map.placeObject(order.xcoord, order.ycoord, tower);
                 session.getTowers().add(tower);
                 session.addArea(tower.getRangeArea());
@@ -85,5 +85,6 @@ public class TowerManager {
         public long getYcoord() {
             return ycoord;
         }
+
     }
 }

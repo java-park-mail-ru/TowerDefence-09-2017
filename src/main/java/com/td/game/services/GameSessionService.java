@@ -3,40 +3,31 @@ package com.td.game.services;
 import com.td.daos.ScoresDao;
 import com.td.daos.UserDao;
 import com.td.domain.User;
+import com.td.game.GameContext;
 import com.td.game.GameSession;
-import com.td.game.domain.*;
-import com.td.game.gameobjects.Path;
-import com.td.game.resource.ResourceFactory;
+import com.td.game.domain.Player;
 import com.td.game.snapshots.GameFinishMessage;
 import com.td.websocket.TransportService;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class GameSessionService {
+    private final Logger logger = LoggerFactory.getLogger(GameSessionService.class);
     @NotNull
     private final Map<Long, GameSession> usersSessions = new HashMap<>();
 
     @NotNull
-    private final Set<GameSession> sessions = new HashSet<>();
-
-    @NotNull
     private final TransportService transport;
-
-    @NotNull
-    private final ResourceFactory resourceFactory;
-
-    @NotNull
-    private final PathGenerateService pathGenerator;
-
-    @NotNull
-    private final MonsterWaveGenerator waveService;
 
     @NotNull
     private final UserDao userDao;
@@ -48,60 +39,48 @@ public class GameSessionService {
     private final GameInitService gameInitService;
 
     @NotNull
-    private List<GameParams> gameSessionsParams;
+    private final GameContextService gameContextService;
 
     public GameSessionService(@NotNull TransportService transport,
-                              @NotNull ResourceFactory resourceFactory,
-                              @NotNull PathGenerateService pathGenerator,
-                              @NotNull MonsterWaveGenerator waveService,
                               @NotNull UserDao userDao,
                               @NotNull ScoresDao scoresDao,
-                              @NotNull GameInitService gameInitService) {
+                              @NotNull GameInitService gameInitService,
+                              @NotNull GameContextService gameContextService) {
         this.transport = transport;
-        this.resourceFactory = resourceFactory;
-        this.pathGenerator = pathGenerator;
-        this.waveService = waveService;
+
         this.userDao = userDao;
         this.scoresDao = scoresDao;
         this.gameInitService = gameInitService;
-        this.gameSessionsParams = new ArrayList<>();
+        this.gameContextService = gameContextService;
     }
 
-    @PostConstruct
-    public void init() {
-        this.gameSessionsParams = resourceFactory.loadResourceList("gameParams/GameParamsList.json", GameParams.class);
-    }
 
-    public void startGame(List<User> users) {
-        GameMap map = new GameMap(resourceFactory.loadResource("GameMap.json", GameMap.GameMapResource.class));
+    public boolean startGame(Set<User> users, GameContext context) {
+        GameSession session = gameInitService.createGameSession(users);
+        synchronized (usersSessions) {
+            if (users.stream().anyMatch(user -> isPlaying(user.getId()))) {
+                return false;
+            }
+            users.forEach(user -> {
+                usersSessions.put(user.getId(), session);
+                gameContextService.registerUserMapping(user.getId(), context);
+            });
+        }
 
-        Path path = pathGenerator.generatePath();
-        List<Path> paths = new ArrayList<>();
-        paths.add(path);
-
-        map.setPathTitles(path.getPathPoints());
-        Wave wave = waveService.generateWave(0, paths);
-        List<Player> players = users.stream()
-                .map(user -> new Player(user.getId(), user.getProfile().getGameClass(), user.getNickname()))
-                .collect(Collectors.toList());
-
-        Map<String, PlayerClass> availableClasses = users.stream()
-                .map(user -> resourceFactory.loadResource(user.getProfile().getGameClass() + ".json", PlayerClass.class))
-                .collect(Collectors
-                        .toMap(PlayerClass::toString,
-                                value -> value,
-                                (left, right) -> left));
-
-        Map<Long, PlayerClass> playersClasses = users.stream()
-                .collect(Collectors
-                        .toMap(User::getId,
-                                user -> availableClasses.get(user.getProfile().getGameClass())
-                        ));
-        GameParams sessionParams = gameSessionsParams.get(users.size() - 1);
-        GameSession session = new GameSession(players, playersClasses, map, wave, paths, sessionParams);
-        gameInitService.initGameInSession(session);
-        sessions.add(session);
-        users.forEach(user -> usersSessions.put(user.getId(), session));
+        context.addSession(session);
+        try {
+            gameInitService.initGameInSession(session);
+        } catch (SnapshotSendingException exception) {
+            logger.error("Unable to send initial snapshot: {}", exception);
+            synchronized (usersSessions) {
+                users.forEach(user -> {
+                    usersSessions.remove(user.getId());
+                    gameContextService.unregisterUserMapping(user.getId());
+                });
+            }
+            return false;
+        }
+        return true;
     }
 
     public boolean isPlaying(Long id) {
@@ -115,21 +94,23 @@ public class GameSessionService {
                 .allMatch(player -> transport.isConnected(player.getId()));
     }
 
-    public void terminateSession(@NotNull GameSession session, CloseStatus status) {
+    public void terminateSession(@NotNull GameSession session, CloseStatus status, GameContext context) {
         List<Player> players = session.getPlayers();
         for (Player player : players) {
             usersSessions.remove(player.getId());
+            gameContextService.unregisterUserMapping(player.getId());
             transport.closeSession(player.getId(), status);
         }
-        sessions.remove(session);
+        context.removeSession(session);
     }
 
 
-    public void finishGame(@NotNull GameSession session) {
+    public void finishGame(@NotNull GameSession session, GameContext context) {
         for (Player player : session.getPlayers()) {
             User user = userDao.getUserById(player.getId());
             scoresDao.addScores(user, player.getScores());
             usersSessions.remove(user.getId());
+            gameContextService.unregisterUserMapping(player.getId());
             try {
                 transport.sendMessageToUser(player.getId(), new GameFinishMessage(player.getScores()));
                 transport.closeSession(player.getId(), CloseStatus.NORMAL);
@@ -137,12 +118,7 @@ public class GameSessionService {
                 transport.closeSession(player.getId(), CloseStatus.SERVER_ERROR);
             }
         }
-        sessions.remove(session);
-    }
-
-
-    public Set<GameSession> getSessions() {
-        return sessions;
+        context.removeSession(session);
     }
 
     public GameSession getSessionForUser(Long playerId) {
