@@ -19,7 +19,7 @@ public interface IUserDao {
 
     List<User> getUsersByNicknames(List<String> nicknames);
 
-    User createUser(String nickname, String email, String password);
+    User createUser(String nickname, String email, String password, String gameClass);
 
     User storeUser(User user);
 
@@ -30,8 +30,6 @@ public interface IUserDao {
     void removeUserByEmail(String email);
 
     void removeUserByNickname(String nickname);
-
-    int removeUserByParams(Long id, String email, String nickname);
 
     User updateUserById(Long id, String email, String login, String password);
 

@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @Transactional
@@ -41,10 +43,11 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andReturn()
@@ -53,7 +56,7 @@ public class UserControllerTest {
 
 
         this.mockMvc
-                .perform(get("/user")
+                .perform(get("/api/user")
                         .cookie(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("login").value("login"))
@@ -68,10 +71,11 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         MockHttpServletResponse response = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
@@ -84,10 +88,11 @@ public class UserControllerTest {
                 "newLogin",
                 null,
                 null,
-                returned.getId()
+                returned.getId(),
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/user/edit")
+                .perform(post("/api/user/edit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update))
                         .cookie(session))
@@ -101,7 +106,7 @@ public class UserControllerTest {
         update.setEmail("newEmail@mail.ru");
 
         this.mockMvc
-                .perform(post("/user/edit")
+                .perform(post("/api/user/edit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update))
                         .cookie(session))
@@ -116,7 +121,7 @@ public class UserControllerTest {
     public void testGetUserDataWithoutSession() throws Exception {
 
         this.mockMvc
-                .perform(get("/user"))
+                .perform(get("/api/user"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("type").value("authorization_error"));
     }
@@ -127,10 +132,11 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         MockHttpServletResponse response = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
@@ -142,10 +148,11 @@ public class UserControllerTest {
                 "newLogin",
                 null,
                 null,
-                returned.getId()
+                returned.getId(),
+                "Adventuer"
         );
         this.mockMvc
-                .perform(post("/user/edit")
+                .perform(post("/api/user/edit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update)))
                 .andExpect(status().isForbidden())
@@ -158,10 +165,11 @@ public class UserControllerTest {
                 "login",
                 "password",
                 "email@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         MockHttpServletResponse response = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
@@ -174,10 +182,11 @@ public class UserControllerTest {
                 "newLogin",
                 null,
                 null,
-                returned.getId() + 1
+                returned.getId() + 1,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/user/edit")
+                .perform(post("/api/user/edit")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update))
                         .cookie(session))

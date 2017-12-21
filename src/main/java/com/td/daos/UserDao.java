@@ -4,21 +4,24 @@ import com.td.daos.exceptions.UserDaoAlreadyExists;
 import com.td.daos.exceptions.UserDaoInvalidData;
 import com.td.daos.exceptions.UserDaoUpdateFail;
 import com.td.daos.inerfaces.IUserDao;
+import com.td.domain.GameProfile;
 import com.td.domain.User;
 import org.hibernate.exception.ConstraintViolationException;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @Transactional
 public class UserDao implements IUserDao {
+    private final Logger logger = LoggerFactory.getLogger(UserDao.class);
+
     private final EntityManager em;
 
     public UserDao(@Autowired EntityManager em) {
@@ -68,7 +71,7 @@ public class UserDao implements IUserDao {
             User user = em.createQuery("SELECT u FROM User u WHERE u.nickname = :nickname", User.class)
                     .setParameter("nickname", nickname)
                     .getSingleResult();
-          return user;
+            return user;
         } catch (NoResultException ex) {
             return null;
         }
@@ -87,12 +90,13 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public User createUser(String nickname, String email, String password) {
+    public User createUser(String nickname, String email, String password, String gameClass) {
         try {
             User user = new User();
             user.setNickname(nickname);
             user.setEmail(email);
             user.setPassword(password);
+            user.setProfile(new GameProfile(gameClass));
             return storeUser(user);
         } catch (PersistenceException except) {
             if (except.getCause() instanceof ConstraintViolationException) {
@@ -204,12 +208,20 @@ public class UserDao implements IUserDao {
         removeUserByParams(null, null, nickname);
     }
 
-    @Override
-    public int removeUserByParams(Long id, String email, String nickname) {
-        return em.createQuery("DELETE FROM User u WHERE u.id = :id or u.email = :email or u.nickname = :nickname")
-                .setParameter("id", id)
-                .setParameter("email", email)
-                .setParameter("nickname", nickname)
-                .executeUpdate();
+
+    private void removeUserByParams(@Nullable Long id, @Nullable String email, @Nullable String nickname) {
+        try {
+            if (id != null) {
+                em.remove(em.getReference(User.class, id));
+            } else {
+                User user = em.createQuery("SELECT u FROM User u WHERE u.email = :email or u.nickname = :nickname", User.class)
+                        .setParameter("email", email)
+                        .setParameter("nickname", nickname)
+                        .getSingleResult();
+                em.remove(user);
+            }
+        } catch (EntityNotFoundException e) {
+            logger.trace("Deleting of nonexisting user, id: {},email: {},nickname: {}", id, email, nickname, e);
+        }
     }
 }

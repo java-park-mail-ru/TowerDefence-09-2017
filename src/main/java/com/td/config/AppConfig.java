@@ -2,15 +2,25 @@ package com.td.config;
 
 import com.td.domain.User;
 import com.td.dtos.UserDto;
+import com.td.websocket.GameSocketHandler;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 
-@Configuration
+@SpringBootConfiguration
 public class AppConfig {
+
+    @Bean
+    public WebSocketHandler gameWebSocketHandler() {
+        return new PerConnectionWebSocketHandler(GameSocketHandler.class);
+    }
 
     @Bean
     public ModelMapper modelMapper() {
@@ -28,13 +38,21 @@ public class AppConfig {
     }
 
     @Bean
+    public TaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler threadPoolScheduler = new ThreadPoolTaskScheduler();
+        threadPoolScheduler.setThreadNamePrefix("td-");
+        threadPoolScheduler.setPoolSize(2);
+        return threadPoolScheduler;
+    }
+
+    @Bean
     public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://frontend.debug:8000");
         config.addAllowedOrigin("https://tdteam.herokuapp.com");
-
+        config.addAllowedOrigin("https://tdgame.pw");
         config.addAllowedHeader("*");
         config.addAllowedHeader("Content-Type");
 
@@ -42,8 +60,16 @@ public class AppConfig {
 
         config.setAllowCredentials(true);
 
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/api/auth/*", config);
+
+        source.registerCorsConfiguration("/api/user", config);
+        source.registerCorsConfiguration("/api/user/*", config);
+
+        source.registerCorsConfiguration("/api/scores", config);
+        source.registerCorsConfiguration("/api/scores/*/page/*", config);
+
         return new CorsFilter(source);
     }
+
 
 }

@@ -4,6 +4,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,11 +26,14 @@ public class User {
 
     private OffsetDateTime regDate;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Progress> progress;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Score> scores;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private GameProfile profile;
 
     public User() {
         this.nickname = "";
@@ -37,6 +41,8 @@ public class User {
         this.email = "";
         this.id = 0L;
         this.regDate = OffsetDateTime.now();
+        this.scores = new ArrayList<>();
+        this.progress = new ArrayList<>();
     }
 
     private String hashPassword(String somePassword) {
@@ -83,19 +89,19 @@ public class User {
     }
 
     public void updateEmail(String newEmail) {
-        if (newEmail != null) {
+        if (newEmail != null && !newEmail.isEmpty()) {
             setEmail(newEmail);
         }
     }
 
     public void updateNickname(String newNickname) {
-        if (newNickname != null) {
+        if (newNickname != null && !newNickname.isEmpty()) {
             setNickname(newNickname);
         }
     }
 
     public void updatePassword(String newPassword) {
-        if (newPassword != null) {
+        if (newPassword != null && !newPassword.isEmpty()) {
             setPassword(newPassword);
         }
     }
@@ -106,5 +112,47 @@ public class User {
 
     public void setRegDate(OffsetDateTime regDate) {
         this.regDate = regDate;
+    }
+
+    public GameProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(GameProfile profile) {
+        profile.setUser(this);
+        this.profile = profile;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        User user = (User) obj;
+
+        return id != null ? id.equals(user.id) : user.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    public List<Score> getScores() {
+        return scores;
+    }
+
+    public List<Progress> getProgress() {
+        return progress;
+    }
+
+    public void addScores(Score score) {
+        scores.add(score);
+        score.setOwner(this);
     }
 }

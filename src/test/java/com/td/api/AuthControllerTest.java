@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @Transactional
@@ -37,10 +39,11 @@ public class AuthControllerTest {
                 "testSignupSuccess",
                 "password",
                 "testSignupSuccess@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testUser)))
                 .andExpect(status().isOk())
@@ -58,16 +61,17 @@ public class AuthControllerTest {
                 "testSignupSuccess",
                 "password",
                 "testSignupSuccess@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testUser)))
                 .andReturn().getResponse().getCookie("SESSION");
 
         this.mockMvc
-                .perform(post("/auth/logout")
+                .perform(post("/api/auth/logout")
                         .cookie(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value("Success"));
@@ -79,26 +83,28 @@ public class AuthControllerTest {
                 "testSigninAfterLogout",
                 "password",
                 "testSigninAfterLogout@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testUser)))
                 .andReturn().getResponse().getCookie("SESSION");
 
         this.mockMvc
-                .perform(post("/auth/logout")
+                .perform(post("/api/auth/logout")
                         .cookie(session));
 
         TestUserDto signin = new TestUserDto(
                 null,
                 "password",
                 "testSigninAfterLogout@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signin")
+                .perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signin)))
                 .andExpect(status().isOk())
@@ -115,10 +121,11 @@ public class AuthControllerTest {
                 "iv",
                 "password",
                 "valid@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidNickname)))
                 .andExpect(status().isBadRequest())
@@ -133,10 +140,11 @@ public class AuthControllerTest {
                 "login",
                 "password",
                 "invalid mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidEmail)))
                 .andExpect(status().isBadRequest())
@@ -152,10 +160,11 @@ public class AuthControllerTest {
                 "login",
                 "ps",
                 "testSignupWithInvalidNickname@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidPassword)))
                 .andExpect(status().isBadRequest())
@@ -171,10 +180,11 @@ public class AuthControllerTest {
                 "iv",
                 "ps",
                 "invalid mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(totalInvalid)))
                 .andExpect(status().isBadRequest())
@@ -185,13 +195,7 @@ public class AuthControllerTest {
 
     @Test
     public void testLogoutWithoutSession() throws Exception {
-        TestUserDto unregistered = new TestUserDto(
-                "unregistered",
-                "password",
-                "unregistered@mail.ru",
-                null
-        );
-        this.mockMvc.perform(post("/auth/logout"))
+        this.mockMvc.perform(post("/api/auth/logout"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("type").value("authorization_error"));
 
@@ -204,10 +208,11 @@ public class AuthControllerTest {
                 null,
                 "password",
                 "unregistered@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signin")
+                .perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(unregistered)))
                 .andExpect(status().isBadRequest())
@@ -222,24 +227,26 @@ public class AuthControllerTest {
                 "some",
                 "password",
                 "some@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         TestUserDto sameEmail = new TestUserDto(
                 "same",
                 "password",
                 "some@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(some)))
                 .andExpect(status().isOk());
 
         this.mockMvc
-                .perform(post("/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(sameEmail)))
+                .perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(sameEmail)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("type").value("incorrect_request_data"))
                 .andExpect(jsonPath("$.incorrectRequestDataErrors[0].fieldName").value("email"));
@@ -251,22 +258,24 @@ public class AuthControllerTest {
                 "some",
                 "password",
                 "some@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         TestUserDto sameNickname = new TestUserDto(
                 "some",
                 "password",
                 "other@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(some)))
                 .andExpect(status().isOk());
 
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sameNickname)))
                 .andExpect(status().isBadRequest())
@@ -280,33 +289,27 @@ public class AuthControllerTest {
                 "SignupAlreadySignedIn",
                 "password",
                 "SASI@mail.ru",
-                null
+                null,
+                "Adventurer"
         );
         Cookie session = this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testUser)))
                 .andReturn().getResponse().getCookie("SESSION");
 
         TestUserDto otherUser = new TestUserDto(
-                "SASIOtherUser",
+                "otherUser",
                 "password",
-                "SASIOtherUser@mail.ru",
-                null
+                "otherUser@mail.ru",
+                null,
+                "Adventurer"
         );
-
         this.mockMvc
-                .perform(post("/auth/signup")
+                .perform(post("/api/auth/signup")
                         .cookie(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(otherUser)))
                 .andExpect(status().isConflict());
     }
-
-    @Test
-    public void testSigninAlreadySignedIn() throws Exception {
-
-    }
-
-
 }

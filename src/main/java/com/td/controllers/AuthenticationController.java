@@ -2,6 +2,7 @@ package com.td.controllers;
 
 import com.td.Constants;
 import com.td.daos.UserDao;
+import com.td.domain.GameProfile;
 import com.td.domain.User;
 import com.td.dtos.ResponseJson;
 import com.td.dtos.SigninFormDto;
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(path = "/auth")
+@RequestMapping(path = "/api/auth")
 public class AuthenticationController {
     private final ModelMapper modelMapper;
 
@@ -63,6 +64,7 @@ public class AuthenticationController {
             throw new AuthException("user is logged in already", "/signup", HttpStatus.CONFLICT);
         }
 
+        user.setProfile(new GameProfile(userDto.getGameClass()));
         userDao.storeUser(user);
         httpSession.setAttribute(Constants.USER_SESSION_KEY, user.getId());
 

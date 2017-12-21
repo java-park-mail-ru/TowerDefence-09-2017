@@ -10,6 +10,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -21,8 +22,9 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 @Transactional
 public class UserDaoTest {
     @Autowired
@@ -31,6 +33,8 @@ public class UserDaoTest {
     private List<String> uuids;
 
     static final private String EMAIL_SUFFIX = "@mail.ru";
+
+    static final private String DEFAULT_GAME_CLASS = "Adventurer";
 
     @Rule
     public final ExpectedException exp = ExpectedException.none();
@@ -42,12 +46,13 @@ public class UserDaoTest {
                 .limit(5)
                 .collect(Collectors.toList());
         uuids.forEach(uuid -> {
-            User user = dao.createUser(uuid, uuid + EMAIL_SUFFIX, uuid);
+            User user = dao.createUser(uuid, uuid + EMAIL_SUFFIX, uuid, DEFAULT_GAME_CLASS);
             assertEquals(user.getEmail(), uuid + EMAIL_SUFFIX);
             assertEquals(user.getNickname(), uuid);
             assertTrue(user.checkPassword(uuid));
             assertTrue(dao.checkUserById(user.getId()));
             assertTrue(dao.checkUserByEmail(user.getEmail()));
+            assertEquals(user.getProfile().getGameClass(), "Adventurer");
             assertNotNull(user.getId());
         });
     }
@@ -60,6 +65,7 @@ public class UserDaoTest {
             assertEquals(byEmailUser, byNicknameUser);
             assertEquals(byEmailUser.getNickname(), uuid);
             assertEquals(byEmailUser.getEmail(), uuid + EMAIL_SUFFIX);
+            assertNotNull(byEmailUser.getProfile());
         });
     }
 
@@ -164,6 +170,7 @@ public class UserDaoTest {
     public void testUserRemoveByEmail() {
         uuids.forEach(uuid -> {
             User user = dao.getUserByNickname(uuid);
+
             dao.removeUserByEmail(user.getEmail());
             assertFalse(dao.checkUserById(user.getId()));
 
@@ -181,22 +188,6 @@ public class UserDaoTest {
     }
 
     @Test
-    public void testUserRemoveByParams() {
-        int expZero = dao.removeUserByParams(null, null, null);
-        assertEquals(0, expZero);
-
-        User user = dao.getUserByNickname(uuids.get(0));
-        int expOne = dao.removeUserByParams(user.getId(), user.getEmail(), user.getNickname());
-        assertFalse(dao.checkUserById(user.getId()));
-        assertEquals(1, expOne);
-
-        int expTwo = dao.removeUserByParams(null, uuids.get(1) + EMAIL_SUFFIX, uuids.get(2));
-        assertFalse(dao.checkUserByEmail(uuids.get(1) + EMAIL_SUFFIX));
-        assertFalse(dao.checkUserByNickname(uuids.get(2)));
-        assertEquals(2, expTwo);
-    }
-
-    @Test
     public void testUserRemove() {
         User user = dao.getUserByNickname(uuids.get(0));
         dao.removeUser(user);
@@ -207,7 +198,7 @@ public class UserDaoTest {
     public void testDuplicateUserNickname() {
         String str = uuids.get(0);
         exp.expect(UserDaoInvalidData.class);
-        dao.createUser(str, str + str + EMAIL_SUFFIX, str);
+        dao.createUser(str, str + str + EMAIL_SUFFIX, str, DEFAULT_GAME_CLASS);
 
     }
 
@@ -215,7 +206,7 @@ public class UserDaoTest {
     public void testDuplicateUserEmail() {
         String str = uuids.get(0);
         exp.expect(UserDaoInvalidData.class);
-        dao.createUser("new", str + EMAIL_SUFFIX, str);
+        dao.createUser("new", str + EMAIL_SUFFIX, str, DEFAULT_GAME_CLASS);
     }
 
     @Test

@@ -1,0 +1,8 @@
+{
+  "class": "Tower$TowerResource",
+  "damage": 40,
+  "period": 2000,
+  "range": 2,
+  "cost": 60,
+  "typeid": 102
+}
