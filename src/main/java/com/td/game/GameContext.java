@@ -3,9 +3,9 @@ package com.td.game;
 import com.td.game.services.TowerManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.StampedLock;
 
@@ -21,7 +21,7 @@ public class GameContext {
     public GameContext(StampedLock queueLock) {
         this.queueLock = queueLock;
         this.towerOrders = new ConcurrentLinkedQueue<>();
-        this.sessions = new HashSet<>();
+        this.sessions = ConcurrentHashMap.newKeySet();
         this.waiters = new ConcurrentLinkedQueue<>();
         this.timeBuffer = 0L;
     }

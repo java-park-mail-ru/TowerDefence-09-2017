@@ -69,7 +69,6 @@ public class GameScheduler {
                 return sc;
             });
             context.addWaiter(id);
-            logger.info("S:{}, W:{}", context.getSessionsSize(), context.getWaitersQueueLength());
         } finally {
             queueLock.unlockWrite(stamp);
         }

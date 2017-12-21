@@ -15,16 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GameSessionService {
     private final Logger logger = LoggerFactory.getLogger(GameSessionService.class);
     @NotNull
-    private final Map<Long, GameSession> usersSessions = new HashMap<>();
+    private final Map<Long, GameSession> usersSessions = new ConcurrentHashMap<>();
 
     @NotNull
     private final TransportService transport;
@@ -66,8 +66,8 @@ public class GameSessionService {
                 gameContextService.registerUserMapping(user.getId(), context);
             });
         }
-
         context.addSession(session);
+
         try {
             gameInitService.initGameInSession(session);
         } catch (SnapshotSendingException exception) {
