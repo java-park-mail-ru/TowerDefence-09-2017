@@ -1,6 +1,6 @@
 {
   "class": "Tower$TowerResource",
-  "damage": 25,
+  "damage": 10,
   "period": 1000,
   "range": 3,
   "cost": 50,

@@ -1,106 +1,14 @@
 # TowerDefence-09-2017
+## Backend проекта **TD** | Осень 2017
+## [Play](https://tdgame.pw)
 
-Backend проекта **TD** | Осень 2017
+
 ## Команда
-
 - Даниил - [@Dnnd](https://github.com/Dnnd)
 - Олег - [@oleggator](https://github.com/oleggator)
-- Кирилл - [@DrMatters](https://github.com/DrMatters)
-
-## Rest Api 
-
-### Register User
-Регистрация нового пользователя
-#### URL
-`/auth/signup`
-#### Method
-`POST`
-#### Params
+## How to run
 ```
-{
-  "nickname": string [required],
-  "email": string [required],
-  "password": string [required],
-}
+   git clone git@github.com:java-park-mail-ru/TowerDefence-09-2017.git
+   mvn clean install
+   java -jar TD-backend-0-1-0.jar  
 ```
-#### Response
-В случае успеха, возвращает данные созданного пользователя
-```
-{
-  "id": int,
-  "nickname": string,
-  "email": string,
- }
- ```
-### Signin
-Авторизация
-#### URL
-`/auth/signin`
-#### Method
-`POST`
-#### Params
-```
-{
-  "email": string [required],
-  "password": string [required],
-}
-```
-#### Response
-В случае успеха, возвращает данные авторизовавшегося пользователя
-```
-{
-  "id": int,
-  "nickname": string,
-  "email": string,
- }
- ```
-### Logout
-Завершение пользовательской сессии
-##### URL
-`/logout`
-#### Method
-`POST`
-#### Response
-```
-{
-  "status":"Success"
-}
- ``` 
-### Get Current User
-Получение пользователя текущей сессии
-**URL**
-`/user`
-**Method**
-`GET`
-**Response**
-В случае успеха, возвращает данные текущего пользователя
-```
-{
-  "id": int,
-  "nickname": string,
-  "email": string,
- }
- ```
- ### Update User
-Обновление пользователских данных
-#### URL
-`/user/edit`
-#### Params
-```
-{
-  "id": int[required],
-  "nickname": string
-  "email": string,
-  "password": string,
-}
-```
-#### Method
-`POST`
-#### Response
-```
-{
-  "status":"Updated"
- }
- ```
- 
- 

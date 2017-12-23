@@ -51,7 +51,6 @@ public class AppConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://frontend.debug:8000");
-        config.addAllowedOrigin("https://tdteam.herokuapp.com");
         config.addAllowedOrigin("https://tdgame.pw");
         config.addAllowedHeader("*");
         config.addAllowedHeader("Content-Type");
@@ -66,6 +65,8 @@ public class AppConfig {
         source.registerCorsConfiguration("/api/user/*", config);
 
         source.registerCorsConfiguration("/api/scores", config);
+
+        source.registerCorsConfiguration("/api/scores/page/*", config);
         source.registerCorsConfiguration("/api/scores/*/page/*", config);
 
         return new CorsFilter(source);

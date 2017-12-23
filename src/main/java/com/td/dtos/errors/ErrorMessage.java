@@ -36,6 +36,10 @@ public class ErrorMessage {
         return type.toString().toLowerCase();
     }
 
+    public TryAgainError getTryAgainError() {
+        return tryAgainError;
+    }
+
     public final class ErrorMessageBuilder {
 
         private ErrorMessageBuilder() {

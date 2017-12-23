@@ -2,6 +2,7 @@ package com.td.mechanic;
 
 import com.td.daos.UserDao;
 import com.td.domain.User;
+import com.td.game.GameContext;
 import com.td.game.GameSession;
 import com.td.game.domain.*;
 import com.td.game.gameobjects.Monster;
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.locks.StampedLock;
 
 import static org.junit.Assert.*;
 
@@ -46,26 +48,29 @@ public class GameTest {
     @Autowired
     private UserDao dao;
 
+    private GameContext context;
+
     @Before
     public void initialize() {
+        context = new GameContext(new StampedLock());
         User us1 = dao.createUser("us1", "us1@mail.ru", "uuuuu", "Adventurer");
         User us2 = dao.createUser("us2", "us2@mail.ru", "uuuuu", "Adventurer");
         Set<User> users = new HashSet<>();
         users.add(us1);
         users.add(us2);
-        gameSessionService.startGame(users);
+        gameSessionService.startGame(users, context);
     }
 
     @After
     public void deinitialize() {
-        for (GameSession session : gameSessionService.getSessions()) {
-            gameSessionService.finishGame(session);
+        for (GameSession session : context.getSessions()) {
+            gameSessionService.finishGame(session, context);
         }
     }
 
     @Test
     public void testSessionInitialized() {
-        Set<GameSession> sessions = gameSessionService.getSessions();
+        Set<GameSession> sessions = context.getSessions();
         GameParams params = resources.loadResource("gameParams/GameParams_2.json", GameParams.class);
 
         assertTrue(sessions.size() == 1);
@@ -89,7 +94,7 @@ public class GameTest {
 
     @Test
     public void testWaveProcessing() {
-        Set<GameSession> sessions = gameSessionService.getSessions();
+        Set<GameSession> sessions = context.getSessions();
         assertEquals(1, sessions.size());
         for (GameSession session : sessions) {
             Wave wave = session.getCurrentWave();
@@ -123,7 +128,7 @@ public class GameTest {
 
     @Test
     public void testTowersPlacement() {
-        Set<GameSession> sessions = gameSessionService.getSessions();
+        Set<GameSession> sessions = context.getSessions();
         assertEquals(1, sessions.size());
 
         for (GameSession session : sessions) {
@@ -157,7 +162,7 @@ public class GameTest {
 
     @Test
     public void testTowerShooting() {
-        Set<GameSession> sessions = gameSessionService.getSessions();
+        Set<GameSession> sessions = context.getSessions();
         assertEquals(1, sessions.size());
 
         for (GameSession session : sessions) {
